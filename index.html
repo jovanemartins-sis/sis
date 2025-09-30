@@ -3,411 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Integrações SIS</title>
-    
-    <style>
-        :root {
-            --primary-color: #007bff; /* Azul primário */
-            --secondary-color: #6c757d; /* Cinza secundário */
-            --background-color: #f4f7f9; /* Fundo leve */
-            --sidebar-color: #343a40; /* Fundo da sidebar */
-            --header-color: #ffffff; /* Fundo do cabeçalho */
-            --border-color: #dee2e6; /* Cor da borda da tabela */
-            --success-color: #28a745; /* Cor de sucesso (Token OK) */
-            --warning-color: #ffc107; /* Cor de aviso */
-            --danger-color: #dc3545; /* Cor de perigo/erro */
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            display: flex;
-            height: 100vh;
-            color: #333;
-        }
-
-        /* ==================== LAYOUT GERAL ==================== */
-        #sidebar {
-            width: 250px;
-            background-color: var(--sidebar-color);
-            color: white;
-            padding: 20px 0;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
-            overflow-y: auto;
-        }
-
-        #logo {
-            text-align: center;
-            padding: 0 20px 20px;
-            border-bottom: 1px solid #495057;
-            margin-bottom: 20px;
-        }
-
-        #logo h1 {
-            font-size: 1.5em;
-            margin: 0;
-            font-weight: bold;
-        }
-
-        #content {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        /* ==================== MENU DA SIDEBAR ==================== */
-        #sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        #sidebar li a {
-            display: block;
-            padding: 10px 20px;
-            color: #adb5bd;
-            text-decoration: none;
-            transition: background-color 0.3s;
-            font-size: 0.95em;
-        }
-
-        #sidebar li a:hover,
-        #sidebar li.active > a {
-            background-color: #495057;
-            color: white;
-            border-left: 3px solid var(--primary-color);
-            padding-left: 17px; /* Compensar a borda */
-        }
-
-        /* Submenu (Pedidos) */
-        .parent-menu .submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background-color: #3a424a;
-        }
-
-        .parent-menu.open .submenu {
-            max-height: 500px; /* Valor grande o suficiente */
-        }
-
-        .submenu li a {
-            padding-left: 40px;
-            font-size: 0.9em;
-        }
-        
-        /* Ícones e Mensagem de Manutenção */
-        .maintenance-message {
-            padding: 20px;
-            background-color: #ffeeba;
-            border: 1px solid #ffcc00;
-            color: #856404;
-            text-align: center;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 15px;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        h2 {
-            font-size: 1.5em;
-            color: #333;
-        }
-
-        .icon-asterisk {
-            color: var(--danger-color);
-            margin-right: 5px;
-        }
-
-        /* ==================== BOTÕES GERAIS ==================== */
-        button.botao-principal {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-
-        button.botao-principal:hover {
-            background-color: #0056b3;
-        }
-        
-        /* Estilos adicionais para botões de filtro e ação */
-        .botoes-filtro button, .botoes-acao button {
-            padding: 8px 12px;
-            margin-right: 10px;
-            border: 1px solid var(--secondary-color);
-            background-color: white;
-            color: var(--secondary-color);
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .botoes-filtro .botao-principal, .botoes-acao .botao-principal {
-            border: none;
-        }
-        .botoes-acao { margin-top: 20px; margin-bottom: 15px; }
-
-        /* ==================== FILTROS E ABAS ==================== */
-        .filtros-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 15px;
-            background-color: var(--header-color);
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .filtro-item {
-            display: flex;
-            flex-direction: column;
-            min-width: 150px;
-            max-width: 200px;
-        }
-
-        .filtro-item label {
-            font-size: 0.8em;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 4px;
-        }
-
-        .filtros-container select, .filtros-container input[type="text"], .filtros-container input[type="date"] {
-            padding: 6px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-        
-        .abas-container button {
-            padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-bottom: none;
-            background-color: #f0f0f0;
-            cursor: pointer;
-        }
-        .abas-container button.active {
-            background-color: var(--header-color);
-            border-bottom: 2px solid var(--primary-color);
-            font-weight: bold;
-        }
-
-        /* ==================== TABELAS ==================== */
-        .tabela-pedidos-container, .tabela-integracoes-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            margin-top: 10px;
-        }
-
-        table th, table td {
-            border: 1px solid var(--border-color);
-            padding: 10px 8px;
-            text-align: left;
-            font-size: 0.85em;
-        }
-
-        table th {
-            background-color: #e9ecef;
-            color: #495057;
-            font-weight: bold;
-        }
-
-        table tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        /* Estilos dos Status Hub */
-        .status-hub-expedir { background-color: #fff3cd; color: #856404; border-radius: 4px; padding: 3px 6px; font-weight: bold; }
-        .status-hub-pendente { background-color: #f8d7da; color: #721c24; border-radius: 4px; padding: 3px 6px; }
-
-        /* Status de Token na Tabela de Integrações */
-        .token-status {
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.8em;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .token-status.ok {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        /* ==================== MODAL (Cadastro de Integrações) ==================== */
-        .cadastro-modal {
-            display: none; /* Escondido por padrão */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 900px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close-button:hover,
-        .close-button:focus {
-            color: #000;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        /* ==================== MARKETPLACE GRID ==================== */
-        .marketplaces-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 20px;
-            max-height: 500px;
-            overflow-y: auto;
-            padding-right: 10px; /* Espaço para a barra de rolagem */
-        }
-
-        .marketplace-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background-color: white;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            font-size: 0.9em;
-            font-weight: bold;
-            text-align: center;
-            position: relative;
-        }
-
-        .marketplace-card:hover:not(.disabled):not(.coming-soon) {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .marketplace-card img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            margin-bottom: 10px;
-        }
-        
-        .marketplace-card.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background-color: #f9f9f9;
-        }
-        
-        .marketplace-card.coming-soon {
-             opacity: 0.7;
-             cursor: default;
-             background-color: #fcf8e3;
-             border-color: #faebcc;
-        }
-        
-        .soon-tag {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background-color: var(--warning-color);
-            color: #664d03;
-            font-size: 0.7em;
-            padding: 2px 6px;
-            border-radius: 0 8px 0 8px;
-        }
-        
-    </style>
+    <title>SIS - Sistema Integrado de Serviços</title>
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
 
-    <aside id="sidebar">
-        <div id="logo">
-            <h1>SIS Hub</h1>
+    <header id="header">
+        <div class="logo">
+            SIS
         </div>
-        
-        <nav>
+        <div class="user-info">
+            <span class="user-name">Jovane Martins</span>
+            <button class="logout-btn">Sair</button>
+        </div>
+    </header>
+
+    <div id="container">
+        <nav id="sidebar">
             <ul>
-                <li><a href="#" data-page="inicio">Início</a></li>
-                <li><a href="#" data-page="integracoes">Integrações</a></li>
+                <li><a href="#" data-page="inicio"><span class="icon-dashboard"></span> Início</a></li>
+                
                 <li class="parent-menu">
-                    <a href="#" data-page="pedidos">Pedidos</a>
+                    <a href="#" data-page="pedidos"><span class="icon-truck"></span> Pedidos</a>
                     <ul class="submenu">
-                        <li><a href="#" data-page="pedidos" class="sub-link">Consultar Pedidos</a></li>
-                        <li><a href="#" data-page="plp" class="sub-link">PLP</a></li>
-                        <li><a href="#" data-page="notas-fiscais" class="sub-link">Notas Fiscais</a></li>
-                        <li><a href="#" data-page="mensagens" class="sub-link">Mensagens</a></li>
+                        <li><a href="#" data-page="pedidos">Listar Pedidos</a></li>
+                        <li><a href="#" data-page="plp">PLP</a></li>
                     </ul>
                 </li>
-                <li><a href="#" data-page="produtos">Produtos</a></li>
-                <li><a href="#" data-page="anuncios">Anúncios</a></li>
-                <li><a href="#" data-page="expedicao">Expedição</a></li>
-                <li><a href="#" data-page="coleta">Conferência de Coleta</a></li>
-                <li><a href="#" data-page="relatorios">Relatórios</a></li>
-                <li><a href="#" data-page="configuracoes">Configurações</a></li>
+
+                <li><a href="#" data-page="produtos"><span class="icon-box"></span> Produtos</a></li>
+                <li><a href="#" data-page="anuncios"><span class="icon-tag"></span> Anúncios</a></li>
+                
+                <li class="parent-menu">
+                    <a href="#" data-page="expedicao"><span class="icon-scan"></span> Expedição</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-page="expedicao">Painel de Expedição</a></li>
+                        <li><a href="#" data-page="coleta">Conferência de Coleta</a></li>
+                    </ul>
+                </li>
+                
+                <li><a href="#" data-page="mensagens"><span class="icon-message"></span> Mensagens</a></li>
+                <li><a href="#" data-page="notas-fiscais"><span class="icon-file"></span> Notas Fiscais</a></li>
+                
+                <li class="parent-menu">
+                    <a href="#" data-page="configuracoes"><span class="icon-settings"></span> Configurações</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-page="configuracoes">Gerais</a></li>
+                        <li class="active"><a href="#" data-page="integracoes">Integrações</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="#" data-page="relatorios"><span class="icon-chart"></span> Relatórios</a></li>
             </ul>
         </nav>
-    </aside>
-
-    <main id="content">
+        
+        <main id="content-wrapper">
+            <div id="content">
+                </div>
         </main>
-    
-    <script src="script.js"></script>
+    </div>
 
+    <script src="script.js"></script> 
 </body>
 </html>
