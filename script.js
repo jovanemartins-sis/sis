@@ -1,9 +1,8 @@
 // =========================================================
 // CONFIGURAÇÕES DA INTEGRAÇÃO MERCADO LIVRE (OAuth 2.0)
 // =========================================================
-const MERCADO_LIVRE_CLIENT_ID = '2535848994116239'; // Seu Client ID
-const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/'; // Seu Redirect URI
-// Link de autorização completo
+const MERCADO_LIVRE_CLIENT_ID = '2535848994116239'; // SEU Client ID
+const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/';
 const OAUTH_URL = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${MERCADO_LIVRE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
 
 
@@ -226,6 +225,7 @@ const integracoesMock = [
     { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
 ];
 
+
 // =========================================================
 // Funções de Renderização e Lógica
 // =========================================================
@@ -287,37 +287,6 @@ function renderIntegracoesTable(integracoes) {
     });
 }
 
-function filterPedidos() {
-    const lojaFilterValue = document.getElementById('filtro-loja').value.toLowerCase().replace('-principal', '').trim();
-    const statusHubFilterValue = document.getElementById('filtro-status-hub').value.toLowerCase().trim();
-    const idHubFilterValue = document.getElementById('filtro-id-hub').value.trim().toLowerCase();
-    const clienteFilterValue = document.getElementById('filtro-cliente').value.trim().toLowerCase();
-    
-
-    const filteredPedidos = pedidosMock.filter(pedido => {
-        
-        if (lojaFilterValue !== 'todos' && !pedido.loja.toLowerCase().includes(lojaFilterValue)) {
-             return false;
-        }
-        
-        if (statusHubFilterValue !== 'todos' && pedido.statusHub.toLowerCase() !== statusHubFilterValue) {
-            return false;
-        }
-
-        if (idHubFilterValue && pedido.id.toLowerCase().includes(idHubFilterValue) === false) {
-            return false;
-        }
-
-        if (clienteFilterValue && pedido.cliente.toLowerCase().includes(clienteFilterValue) === false) {
-            return false;
-        }
-
-        return true;
-    });
-
-    renderTable(filteredPedidos);
-}
-
 function setupCadastroIntegracao() {
     const btn = document.querySelector('.cadastrar-integracao');
     const modal = document.getElementById('cadastro-modal');
@@ -352,7 +321,8 @@ function setupCadastroIntegracao() {
                         modal.style.display = 'none'; 
 
                         // 2. Inicia o fluxo de Autorização (OAuth/Login) com o seu link de integração
-                        window.location.href = OAUTH_URL;
+                        // ESTE É O REDIRECIONAMENTO CORRETO SOLICITADO
+                        window.location.href = OAUTH_URL; 
 
                     } else {
                         // Ação genérica para outros marketplaces
@@ -365,6 +335,37 @@ function setupCadastroIntegracao() {
     }
 }
 
+
+function filterPedidos() {
+    const lojaFilterValue = document.getElementById('filtro-loja').value.toLowerCase().replace('-principal', '').trim();
+    const statusHubFilterValue = document.getElementById('filtro-status-hub').value.toLowerCase().trim();
+    const idHubFilterValue = document.getElementById('filtro-id-hub').value.trim().toLowerCase();
+    const clienteFilterValue = document.getElementById('filtro-cliente').value.trim().toLowerCase();
+    
+
+    const filteredPedidos = pedidosMock.filter(pedido => {
+        
+        if (lojaFilterValue !== 'todos' && !pedido.loja.toLowerCase().includes(lojaFilterValue)) {
+             return false;
+        }
+        
+        if (statusHubFilterValue !== 'todos' && pedido.statusHub.toLowerCase() !== statusHubFilterValue) {
+            return false;
+        }
+
+        if (idHubFilterValue && pedido.id.toLowerCase().includes(idHubFilterValue) === false) {
+            return false;
+        }
+
+        if (clienteFilterValue && pedido.cliente.toLowerCase().includes(clienteFilterValue) === false) {
+            return false;
+        }
+
+        return true;
+    });
+
+    renderTable(filteredPedidos);
+}
 
 function setupFilterButtons() {
     const limparFiltroBtn = document.getElementById('limpar-filtro');
@@ -399,9 +400,9 @@ function loadPage(pageName) {
     if (pageName === 'pedidos') {
         renderTable(pedidosMock);
         setupFilterButtons();
-    } else if (pageName === 'integracoes') {
+    } else if (pageName === 'integracoes') { // Lógica para carregar Integrações
         renderIntegracoesTable(integracoesMock); 
-        setupCadastroIntegracao();
+        setupCadastroIntegracao(); // CHAMA A FUNÇÃO DE REDIRECIONAMENTO
     }
     setupSidebarMenu();
 }
