@@ -11,18 +11,22 @@ let authorizationSuccessMessage = null;
 // GESTÃO DE DADOS PERSISTENTES (LOCAL STORAGE)
 // =========================================================
 
+// Mock inicial que será usado se nada estiver salvo no localStorage
+const INITIAL_INTEGRATIONS_MOCK = [
+    { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
+    { id: '62306', descricao: 'Mercado Livre - Principal', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
+    { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
+];
+
 // Função para obter a lista de integrações salvas no navegador
 function getIntegracoes() {
     const saved = localStorage.getItem('sis_integracoes');
     if (saved) {
         return JSON.parse(saved);
     }
-    // Retorna a lista inicial se nada estiver salvo (mock inicial)
-    return [
-        { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
-        { id: '62306', descricao: 'Mercado Livre - Principal', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
-        { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
-    ];
+    // Salva e retorna a lista inicial se for o primeiro acesso
+    saveIntegracoes(INITIAL_INTEGRATIONS_MOCK);
+    return INITIAL_INTEGRATIONS_MOCK;
 }
 
 // Função para salvar a lista atual de integrações no navegador
@@ -33,8 +37,6 @@ function saveIntegracoes(integracoes) {
 
 // =========================================================
 // Conteúdo das Páginas (Mockup)
-// ... (Todo o restante do pageContent, pedidosMock, etc. é mantido)
-// ...
 // =========================================================
 
 const pageContent = {
@@ -237,7 +239,7 @@ const pageContent = {
     'relatorios': `<div class="header"><h2>Relatórios</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'configuracoes': `<div class="header"><h2>Configurações</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'notas-fiscais': `<div class="header"><h2>Notas Fiscais</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
-    'mensagens': `<div class="header"><h2>Mensagens</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
+    'mensagens': `<div class="header"><h2>Mensagens</div><div class="maintenance-message">Página em Manutenção</div>`,
     'plp': `<div class="header"><h2>PLP</h2></div><div class="maintenance-message">Página em Manutenção</div>`
 };
 
@@ -247,7 +249,6 @@ const pedidosMock = [
     { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' }
 ];
 
-// O array integracoesMock agora será inicializado pela função getIntegracoes()
 
 // =========================================================
 // Funções de Renderização e Lógica
@@ -283,8 +284,6 @@ function renderIntegracoesTable(integracoes) {
         tableBody.appendChild(row);
     });
 }
-
-// ... (Outras funções como renderTable, setupCadastroIntegracao, loadPage, etc.)
 
 function renderTable(pedidos) {
     const tableBody = document.getElementById('pedidos-table-body');
@@ -339,6 +338,7 @@ function setupCadastroIntegracao() {
                     
                     if (name === 'Mercado Livre') {
                         modal.style.display = 'none'; 
+                        // Ação de Redirecionamento CORRETA
                         window.location.href = OAUTH_URL; 
                     } else {
                         modal.style.display = 'none'; 
@@ -478,27 +478,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. LÓGICA CRÍTICA: Verifica se o Mercado Livre nos enviou o 'code'
     if (urlParams.has('code')) {
-        // --- NOVIDADE: Adiciona a nova integração no localStorage ---
+        // --- ADICIONA A NOVA INTEGRAÇÃO NO LOCALSTORAGE ---
         let integracoesAtuais = getIntegracoes();
         
-        // Simula que a integração foi realizada
-        integracoesAtuais.push({
-            id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
-            descricao: 'Mercado Livre - Nova Loja', // Descrição diferente para teste
-            marketplace: 'Mercado Livre',
-            idEmpresa: '1933',
-            tokenStatus: 'OK',
-            fluxo: 'Emitir Nota/Etiqueta'
-        });
+        // Simula que a integração foi realizada, apenas se a URL não tiver sido limpa ainda
+        if (window.history.length > 1) { // Verifica se houve navegação (simplificação)
+            integracoesAtuais.push({
+                id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
+                descricao: 'Mercado Livre - Nova Loja', // Descrição diferente para teste
+                marketplace: 'Mercado Livre',
+                idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
+                tokenStatus: 'OK',
+                fluxo: 'Emitir Nota/Etiqueta'
+            });
 
-        // Salva a nova lista no localStorage
-        saveIntegracoes(integracoesAtuais);
+            // Salva a nova lista no localStorage
+            saveIntegracoes(integracoesAtuais);
+        }
         // -----------------------------------------------------------
 
         authorizationSuccessMessage = `Integração com Mercado Livre concluída! A nova loja foi salva e agora é exibida na tabela.`;
         
         pageToLoad = 'integracoes'; 
 
+        // Limpa o URL no navegador para remover o parâmetro 'code'
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({path: newUrl}, '', newUrl);
 
