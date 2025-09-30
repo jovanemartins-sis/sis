@@ -1,22 +1,26 @@
 // =========================================================
-// CONFIGURAÇÕES DA INTEGRAÇÃO MERCADO LIVRE (OAuth 2.0)
+// CONFIGURAÇÕES GLOBAIS
 // =========================================================
 const OAUTH_URL = 'https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=2535848994116239&redirect_uri=https://jovanemartins-sis.github.io/sis/';
-
-// Variável global para armazenar a mensagem de sucesso após o retorno do ML
 let authorizationSuccessMessage = null;
+
+// Data de hoje (Hardcoded para simular a data atual no ambiente de teste)
+// O sistema só vai mostrar integrações com essa data.
+const TODAY_DATE = '2025-09-30'; 
+const YESTERDAY_DATE = '2025-09-29'; // Data para as integrações antigas
 
 
 // =========================================================
 // GESTÃO DE DADOS PERSISTENTES (LOCAL STORAGE)
 // =========================================================
 
-// Mock inicial que será usado se nada estiver salvo no localStorage
+// Adicionamos o campo 'creationDate' para permitir a filtragem por data
 const INITIAL_INTEGRATIONS_MOCK = [
-    { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
-    // **NOVA INTEGRAÇÃO PARA TESTAR O FILTRO (STATUS ERRO)**
-    { id: '62306', descricao: 'Mercado Livre - Secundário', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta' },
-    { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
+    { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE },
+    // Esta integração falhará no filtro de MARKETPLACE e DATA
+    { id: '62306', descricao: 'Mercado Livre - Secundário', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta', creationDate: TODAY_DATE },
+    // Esta integração falhará no filtro de DATA (não é de hoje)
+    { id: '62307', descricao: 'Mercado Livre - Antiga OK', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE }
 ];
 
 // Função para obter a lista de integrações salvas no navegador
@@ -261,6 +265,12 @@ function renderIntegracoesTable(integracoes) {
         return;
     }
     tableBody.innerHTML = '';
+
+    if (integracoes.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="no-results">Nenhuma integração do Mercado Livre com status OK foi realizada hoje (${TODAY_DATE}).</td></tr>`;
+        return;
+    }
+
     integracoes.forEach(integracao => {
         const marketplaceClass = integracao.marketplace.toLowerCase().replace(/ /g, '-');
         const tokenClass = integracao.tokenStatus.toLowerCase();
@@ -426,17 +436,24 @@ function loadPage(pageName) {
 
     contentArea.innerHTML = pageHtml;
     
-    // RENDERIZAÇÃO DA TABELA DE INTEGRAÇÕES AGORA COM FILTRO (AQUI ESTÁ A MUDANÇA)
+    // RENDERIZAÇÃO DA TABELA DE INTEGRAÇÕES COM OS FILTROS SOLICITADOS
     if (pageName === 'pedidos') {
         renderTable(pedidosMock);
         setupFilterButtons();
     } else if (pageName === 'integracoes') {
         const allIntegrations = getIntegracoes();
         
-        // APLICAÇÃO DO FILTRO: Apenas integrações com tokenStatus 'OK' (Realizadas)
-        const performedIntegrations = allIntegrations.filter(i => i.tokenStatus === 'OK');
+        // APLICAÇÃO DOS TRÊS FILTROS SOLICITADOS:
+        const filteredIntegrations = allIntegrations.filter(i => 
+            // 1. Apenas Marketplace "Mercado Livre"
+            i.marketplace === 'Mercado Livre' &&
+            // 2. Apenas Token de Acesso "OK"
+            i.tokenStatus === 'OK' &&
+            // 3. Apenas realizadas "HOJE" (baseado na constante TODAY_DATE)
+            i.creationDate === TODAY_DATE
+        );
         
-        renderIntegracoesTable(performedIntegrations); 
+        renderIntegracoesTable(filteredIntegrations); 
         setupCadastroIntegracao();
     }
     setupSidebarMenu();
@@ -508,11 +525,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Simula que a integração foi realizada, adicionando uma nova loja
         integracoesAtuais.push({
             id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
-            descricao: 'Mercado Livre - Nova Loja', 
+            descricao: 'Mercado Livre - Nova Loja de Hoje', 
             marketplace: 'Mercado Livre',
             idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
-            tokenStatus: 'OK', // Status 'OK' para integração bem-sucedida
-            fluxo: 'Emitir Nota/Etiqueta'
+            tokenStatus: 'OK', 
+            fluxo: 'Emitir Nota/Etiqueta',
+            creationDate: TODAY_DATE // ESSENCIAL: Define a data de hoje
         });
 
         // Salva a nova lista no localStorage
