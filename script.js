@@ -244,7 +244,7 @@ function renderPedidosTable(pedidos, isFullPage = false) {
 
         <div class="abas-tipo-pedido">
             <a href="#" class="tipo-tab ${!isFullPage ? 'active' : ''}" data-page="pedidos"><span class="status-badge-padrao">Padrão</span></a>
-            <a href="#" class="tipo-tab"><span class="status-badge-flex">FLEX</span></a>
+            <a href="#" class="tipo-tab" data-page="pedidos-flex"><span class="status-badge-flex">FLEX</span></a>
             <a href="#" class="tipo-tab ${isFullPage ? 'active' : ''}" data-page="pedidos-full-ml"><span class="status-badge-full">FULL</span></a>
         </div>
 
@@ -289,6 +289,9 @@ function renderPedidosTable(pedidos, isFullPage = false) {
         tableHtml += `<tr><td colspan="12" class="no-results">Nenhum pedido encontrado.</td></tr>`;
     } else {
         pedidos.forEach(p => {
+            // Garante que pedidos FLEX apareçam apenas na aba padrão se não houver tela de FLEX dedicada
+            if (!isFullPage && p.tipo === 'FULL') return; 
+            
             const statusHubClass = `status-hub-${p.statusHub.toLowerCase().replace(/ /g, '-')}`;
             const tipoBadgeClass = `status-badge-${p.tipo.toLowerCase()}`;
             tableHtml += `
@@ -336,17 +339,18 @@ function renderPedidosTable(pedidos, isFullPage = false) {
     `;
 
     content.innerHTML = tableHtml;
+    // Necessário reconfigurar a navegação interna das abas após a injeção do HTML
+    setupPedidosTabNavigation();
 }
 
 // 4. Renderiza a Tabela de Pedidos FULL (separada)
 function renderPedidosFullML() {
-     // Apenas pedidos FULL do Mercado Livre
-    const pedidosFull = getPedidos().filter(p => p.tipo === 'FULL' && p.loja.includes('Mercado Livre'));
+     // Filtra apenas pedidos FULL (e opcionalmente do Mercado Livre para simulação)
+    const pedidosFull = getPedidos().filter(p => p.tipo === 'FULL');
     renderPedidosTable(pedidosFull, true);
 }
 
 
-// ... [Restante das funções de renderização (Integracoes, Empresas, Maintenance) permanecem as mesmas] ...
 function renderIntegracoesTable(integracoes) {
     const content = document.getElementById('content');
     
@@ -503,10 +507,7 @@ function renderMaintenancePage(title) {
         </div>
     `;
 }
-// ... [Fim das funções de renderização] ...
 
-
-// ... [Funções de Modal (getModalCadastroHtml, setupCadastroIntegracao, getModalCadastroEmpresaHtml, setupCadastroEmpresa) permanecem as mesmas] ...
 
 // HTML do Modal de Cadastro de Integração (Escolha do MP)
 function getModalCadastroHtml() {
@@ -804,6 +805,50 @@ function setupCadastroEmpresa() {
     });
 }
 
+/**
+ * Configura a navegação entre as abas Padrão, FLEX e FULL na página de Pedidos
+ * É chamada após renderPedidosTable injetar o HTML
+ */
+function setupPedidosTabNavigation() {
+    document.querySelectorAll('.abas-tipo-pedido a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = e.currentTarget.getAttribute('data-page');
+            
+            // 1. Remove o active de todas as abas e adiciona no clicado
+            document.querySelectorAll('.abas-tipo-pedido a').forEach(a => a.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            
+            // 2. Carrega o conteúdo da tabela correspondente
+            if (targetPage === 'pedidos') {
+                const integracoesAtivas = getIntegracoes().filter(i => i.tokenStatus === 'OK');
+                const lojasAtivas = integracoesAtivas.map(i => i.descricao);
+                // Exclui FULL e filtra FLEX e Padrão para a tela principal
+                const pedidosAtivos = getPedidos().filter(p => lojasAtivas.includes(p.loja) && p.tipo !== 'FULL');
+                renderPedidosTable(pedidosAtivos, false);
+                // Garante que o menu lateral 'Pedidos Padrão' fique ativo
+                document.querySelectorAll('#menu li').forEach(li => li.classList.remove('active'));
+                const pedidosLink = document.querySelector('[data-page="pedidos"]');
+                if(pedidosLink) pedidosLink.closest('li').classList.add('active');
+
+
+            } else if (targetPage === 'pedidos-full-ml') {
+                renderPedidosFullML();
+                // Garante que o menu lateral 'Pedidos FULL' fique ativo
+                document.querySelectorAll('#menu li').forEach(li => li.classList.remove('active'));
+                const fullLink = document.querySelector('[data-page="pedidos-full-ml"]');
+                if(fullLink) fullLink.closest('li').classList.add('active');
+
+            } else {
+                // Simular carregamento de FLEX ou outras abas
+                const title = e.currentTarget.textContent.trim();
+                renderMaintenancePage(`Pedidos - ${title}`);
+            }
+        });
+    });
+}
+
+
 /* ========================================================= */
 /* LÓGICA DE NAVEGAÇÃO E CARREGAMENTO DE PÁGINA */
 /* ========================================================= */
@@ -811,11 +856,13 @@ function setupCadastroEmpresa() {
 // Função Principal de Carregamento de Página
 function loadPage(pageName) {
     currentPage = pageName;
-    const menuItems = document.querySelectorAll('#menu li');
-    menuItems.forEach(item => item.classList.remove('active'));
+    
+    // Atualiza o menu lateral (limpa todos e ativa o correto)
+    document.querySelectorAll('#menu li').forEach(item => item.classList.remove('active'));
     
     const targetLink = document.querySelector(`[data-page="${pageName}"]`);
     if (targetLink) {
+        // Encontra o <li> pai e o ativa
         targetLink.closest('li').classList.add('active');
         const parentMenu = targetLink.closest('.parent-menu');
         if (parentMenu) {
@@ -827,12 +874,12 @@ function loadPage(pageName) {
     if (pageName === 'pedidos') {
         const integracoesAtivas = getIntegracoes().filter(i => i.tokenStatus === 'OK');
         const lojasAtivas = integracoesAtivas.map(i => i.descricao);
-        // Filtra pedidos Padrão e FLEX para a tela principal (exclui FULL)
+        // Filtra pedidos Padrão e FLEX (exceto FULL) para a tela principal
         const pedidosAtivos = getPedidos().filter(p => lojasAtivas.includes(p.loja) && p.tipo !== 'FULL');
         renderPedidosTable(pedidosAtivos, false);
 
     } else if (pageName === 'pedidos-full-ml') {
-        renderPedidosFullML(); // Nova função para pedidos FULL
+        renderPedidosFullML(); 
 
     } else if (pageName === 'integracoes') {
         const allIntegrations = getIntegracoes();
@@ -842,39 +889,11 @@ function loadPage(pageName) {
         const allEmpresas = getEmpresas();
         renderEmpresasTable(allEmpresas);
 
-    } else if (pageName === 'inicio' || pageName === 'produtos' || pageName === 'anuncios' || pageName === 'notas-fiscais' || pageName === 'mensagens' || pageName === 'relatorios' || pageName === 'expedicao' || pageName === 'coleta' || pageName === 'plp' || pageName === 'configuracoes' || pageName === 'operador-logistico' || pageName === 'transportadoras') {
-        
+    } else {
+        // Renderiza páginas em manutenção
         const title = targetLink ? targetLink.textContent.trim() : pageName.charAt(0).toUpperCase() + pageName.slice(1);
         renderMaintenancePage(title);
-        
     }
-    
-    // Configura a navegação interna das abas de tipo de pedido (Padrão, FLEX, FULL)
-    document.querySelectorAll('.abas-tipo-pedido a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetPage = e.currentTarget.getAttribute('data-page');
-            if (targetPage) {
-                // Remove o active de todos e adiciona no clicado
-                document.querySelectorAll('.abas-tipo-pedido a').forEach(a => a.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-                
-                // Força o carregamento da página interna sem mudar o menu lateral
-                if (targetPage === 'pedidos') {
-                    const integracoesAtivas = getIntegracoes().filter(i => i.tokenStatus === 'OK');
-                    const lojasAtivas = integracoesAtivas.map(i => i.descricao);
-                    const pedidosAtivos = getPedidos().filter(p => lojasAtivas.includes(p.loja) && p.tipo !== 'FULL');
-                    renderPedidosTable(pedidosAtivos, false);
-                } else if (targetPage === 'pedidos-full-ml') {
-                    renderPedidosFullML();
-                } else {
-                    // Simular carregamento de FLEX ou outras abas
-                    const title = e.currentTarget.textContent.trim();
-                    renderMaintenancePage(`Pedidos - ${title}`);
-                }
-            }
-        });
-    });
 }
 
 // Inicialização do Sistema
@@ -888,24 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (pageName) {
                 e.preventDefault();
-                // Garante que o menu lateral seja atualizado
-                if (pageName === 'pedidos' || pageName === 'pedidos-full-ml') {
-                     // Mantém 'pedidos' ativo na sidebar para ambas sub-páginas
-                    const pedidosLink = document.querySelector('[data-page="pedidos"]');
-                    if(pedidosLink) {
-                        document.querySelectorAll('#menu li').forEach(li => li.classList.remove('active'));
-                        pedidosLink.closest('li').classList.add('active');
-                    }
-                    if(parentMenu) parentMenu.classList.add('open');
-                    
-                    if(pageName === 'pedidos-full-ml') {
-                        renderPedidosFullML();
-                    } else {
-                        loadPage(pageName);
-                    }
-                } else {
-                    loadPage(pageName);
-                }
+                loadPage(pageName);
             } else if (parentMenu) {
                 parentMenu.classList.toggle('open');
             }
