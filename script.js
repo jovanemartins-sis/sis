@@ -54,12 +54,13 @@ function addIntegracao(descricao, marketplace, idEmpresa) {
 }
 
 function getPedidos() {
+    // Definimos a lista completa, incluindo Shopee Padrão/FLEX e ML FULL.
     const defaultPedidos = [
         // Pedido Padrão Shopee
         { id: '56819121', idMp: '251001UNSDRFU', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Ana Paula Santana de Oliveira', data: '30/09/2025 13:51', statusHub: 'Completo', avisos: '1', total: 'R$ 18,60', transportadora: 'Shopee Xpress' },
         // Pedido FLEX Shopee
         { id: '56819122', idMp: '251002FLEXSP', loja: 'Shopee - Principal', tipo: 'FLEX', status: 'PENDING', cliente: 'Roberto Silva', data: '30/09/2025 14:00', statusHub: 'Expedir', avisos: '', total: 'R$ 75,00', transportadora: 'Correios' },
-        // Pedido FULL Mercado Livre (Normalmente não aparece nesta tela, mas vamos deixá-lo para testes)
+        // Pedido FULL Mercado Livre (Este é o pedido que deve aparecer na aba FULL)
         { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre - Antiga OK', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024 10:00', statusHub: 'Completo', avisos: '2', total: 'R$ 150,00', transportadora: 'Mercado Envios' },
     ];
     return JSON.parse(localStorage.getItem('pedidos')) || defaultPedidos;
@@ -289,9 +290,6 @@ function renderPedidosTable(pedidos, isFullPage = false) {
         tableHtml += `<tr><td colspan="12" class="no-results">Nenhum pedido encontrado.</td></tr>`;
     } else {
         pedidos.forEach(p => {
-            // Garante que pedidos FLEX apareçam apenas na aba padrão se não houver tela de FLEX dedicada
-            if (!isFullPage && p.tipo === 'FULL') return; 
-            
             const statusHubClass = `status-hub-${p.statusHub.toLowerCase().replace(/ /g, '-')}`;
             const tipoBadgeClass = `status-badge-${p.tipo.toLowerCase()}`;
             tableHtml += `
@@ -343,11 +341,14 @@ function renderPedidosTable(pedidos, isFullPage = false) {
     setupPedidosTabNavigation();
 }
 
-// 4. Renderiza a Tabela de Pedidos FULL (separada)
+// 4. Renderiza a Tabela de Pedidos FULL (Separada e Filtrada)
 function renderPedidosFullML() {
-     // Filtra apenas pedidos FULL (e opcionalmente do Mercado Livre para simulação)
-    const pedidosFull = getPedidos().filter(p => p.tipo === 'FULL');
-    renderPedidosTable(pedidosFull, true);
+     // Filtra pedidos: deve ser do tipo 'FULL' E a loja deve ser do 'Mercado Livre'
+    const pedidosFullML = getPedidos().filter(p => 
+        p.tipo === 'FULL' && p.loja.includes('Mercado Livre')
+    );
+    // Passa a lista filtrada para o renderizador de tabela, indicando que é a página FULL.
+    renderPedidosTable(pedidosFullML, true);
 }
 
 
