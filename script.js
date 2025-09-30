@@ -269,6 +269,37 @@ const pageContent = {
                 </div>
             </div>
         </div>
+
+        <div id="shopee-modal" class="cadastro-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Cadastrar Shopee (Chave API)</h3>
+                    <span class="close-button shopee-close-button">&times;</span>
+                </div>
+                <div class="cadastro-form-container">
+                    <div class="input-item required">
+                        <label>Descrição da Loja (Ex: Shopee - Principal)</label>
+                        <input type="text" id="shopee-descricao" placeholder="Nome para identificar a loja">
+                    </div>
+                    <div class="input-item required">
+                        <label>Partner ID</label>
+                        <input type="text" id="shopee-partner-id" value="100000">
+                    </div>
+                    <div class="input-item required">
+                        <label>Partner Key</label>
+                        <input type="password" id="shopee-partner-key" value="A1B2C3D4E5F6G7H8">
+                    </div>
+                     <div class="input-item required">
+                        <label>Selecione a Empresa (Vínculo)</label>
+                        <select id="shopee-empresa-vinculo">
+                            <option value="1933" selected>1933 - L LOPES DE SOUZA</option>
+                            <option value="novo">Nova Empresa Teste</option>
+                        </select>
+                    </div>
+                    <button id="salvar-shopee" class="botao-principal full-width mt-20">Salvar Integração Shopee</button>
+                </div>
+            </div>
+        </div>
     `,
     'empresas': `
         <div class="header">
@@ -707,28 +738,90 @@ function setupCadastroIntegracao() {
     const btn = document.querySelector('.cadastrar-integracao');
     const modal = document.getElementById('cadastro-modal');
     const closeBtn = document.querySelector('#cadastro-modal .close-button');
+    
+    // NOVO: Seleciona o modal e botão de fechar da Shopee
+    const shopeeModal = document.getElementById('shopee-modal');
+    const shopeeCloseBtn = document.querySelector('.shopee-close-button');
+    const salvarShopeeBtn = document.getElementById('salvar-shopee');
 
     if (btn && modal) {
         btn.addEventListener('click', () => modal.style.display = 'flex');
         closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        
+        if (shopeeModal) {
+            shopeeCloseBtn.addEventListener('click', () => shopeeModal.style.display = 'none');
+        }
+        
         window.addEventListener('click', (event) => {
             if (event.target === modal) modal.style.display = 'none';
+            if (event.target === shopeeModal) shopeeModal.style.display = 'none';
         });
 
         document.querySelectorAll('.marketplace-card').forEach(card => {
             if (!card.classList.contains('disabled') && !card.classList.contains('coming-soon')) {
                 card.addEventListener('click', () => {
                     const name = card.getAttribute('data-marketplace'); 
+                    
                     if (name === 'Mercado Livre') {
                         modal.style.display = 'none'; 
                         // Redirecionamento simulado para o fluxo OAuth
                         window.location.href = OAUTH_URL; 
+                    } else if (name === 'Shopee') {
+                        // Abre o modal da Shopee
+                        modal.style.display = 'none';
+                        shopeeModal.style.display = 'flex';
                     } else {
                         modal.style.display = 'none'; 
                         alert(`Iniciando o fluxo de cadastro para: ${name}`);
                     }
                 });
             }
+        });
+    }
+    
+    // NOVO: Lógica de salvamento para Shopee
+    if (salvarShopeeBtn) {
+        salvarShopeeBtn.addEventListener('click', () => {
+            const descricao = document.getElementById('shopee-descricao').value;
+            const partnerId = document.getElementById('shopee-partner-id').value;
+            const empresaId = document.getElementById('shopee-empresa-vinculo').value;
+            
+            if (descricao.trim() === '') {
+                alert('Por favor, preencha a descrição da loja.');
+                return;
+            }
+
+            // Simula o salvamento
+            const integracoesAtuais = getIntegracoes();
+            integracoesAtuais.push({
+                id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
+                descricao: descricao, 
+                marketplace: 'Shopee',
+                idEmpresa: empresaId, 
+                tokenStatus: 'OK', 
+                fluxo: 'Emitir Nota/Etiqueta',
+                creationDate: TODAY_DATE
+            });
+            saveIntegracoes(integracoesAtuais);
+            
+            // Adiciona um pedido mock para a loja recém-criada
+            pedidosMock.push({
+                id: (Math.floor(Math.random() * 90000) + 57000000).toString(),
+                idMp: 'SHOPEE-' + (Math.floor(Math.random() * 900000) + 100000),
+                loja: descricao, 
+                tipo: 'Padrão', 
+                status: 'READY_TO_SHIP', 
+                cliente: 'Cliente Novo Shopee', 
+                data: TODAY_DATE.split('-').reverse().join('/'), 
+                statusHub: 'Expedir', 
+                avisos: 'Novo da integração Shopee', 
+                total: 'R$ 150,00' 
+            });
+            
+            // Fecha o modal e recarrega a página de integrações com mensagem de sucesso
+            shopeeModal.style.display = 'none';
+            authorizationSuccessMessage = `Integração com Shopee ("${descricao}") salva com sucesso (Partner ID: ${partnerId})!`;
+            loadPage('integracoes');
         });
     }
 }
@@ -863,7 +956,7 @@ function loadPage(pageName) {
 
 
     if (pageName === 'integracoes' && authorizationSuccessMessage) {
-        // Exibe o banner de sucesso após o retorno do OAuth
+        // Exibe o banner de sucesso após o retorno do OAuth/Shopee
         const successHtml = `<div class="success-banner"><span class="icon-check">✓</span> ${authorizationSuccessMessage}</div>`;
         pageHtml = successHtml + pageContent[pageName]; // Concatena o banner com o conteúdo da página
         authorizationSuccessMessage = null; 
@@ -947,7 +1040,7 @@ function startApp() {
     const urlParams = new URLSearchParams(window.location.search);
     let pageToLoad = 'pedidos'; 
 
-    // Lógica para simular o retorno do OAuth (Integração de Marketplace)
+    // Lógica para simular o retorno do OAuth (Mercado Livre)
     if (urlParams.has('code')) {
         let integracoesAtuais = getIntegracoes();
         
