@@ -3,49 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIS - Hub de Integrações (Mockup)</title>
+    <title>SIS - Sistema Integrador de Marketplaces</title>
     <link rel="stylesheet" href="style.css"> 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 </head>
 <body>
 
-    <div id="app-container">
-        
-        <div id="sidebar">
-            <div class="logo">
-                <img src="logo.png" alt="SIS - Hub de Integrações"> 
-            </div>
-            <nav>
-                <ul>
-                    <li class="active"><a href="#" data-page="pedidos" class="icon-truck">Pedidos</a></li>
-                    
-                    <li class="parent-menu">
-                        <a href="#" class="icon-gear">Integrações</a>
-                        <ul class="submenu">
-                            <li><a href="#" data-page="integracoes" class="icon-asterisk">Integrações</a></li>
-                            <li><a href="#" data-page="empresas">Empresas</a></li> 
-                            <li><a href="#" data-page="configuracoes">Configurações</a></li>
-                            <li><a href="#" data-page="operador-logistico">Operador Logístico</a></li>
-                            <li><a href="#" data-page="transportadoras">Transportadoras</a></li>
-                            <li><a href="#" data-page="notas-fiscais">Notas Fiscais</a></li>
-                        </ul>
-                    </li>
-
-                    <li><a href="#" data-page="produtos" class="icon-house">Produtos</a></li>
-                    <li><a href="#" data-page="anuncios" class="icon-chart">Anúncios</a></li>
-                    <li><a href="#" data-page="expedicao" class="icon-wrench">Expedição</a></li>
-                    <li><a href="#" data-page="coleta">Conferência de Coleta</a></li>
-                    <li><a href="#" data-page="relatorios">Relatórios</a></li>
-                    <li><a href="#" data-page="mensagens" class="icon-message">Mensagens</a></li>
-                    <li><a href="#" data-page="plp">PLP</a></li>
-                </ul>
-            </nav>
+    <div id="sidebar">
+        <div class="logo">
+            <span class="logo-icon">SIS</span>
+            <span class="logo-text">Hub</span>
         </div>
-
-        <div id="content">
-            <div class="maintenance-message">Carregando...</div>
+        <ul id="menu">
+            <li><a href="#" data-page="inicio"><span class="material-icons-outlined">dashboard</span> Início</a></li>
+            <li><a href="#" data-page="pedidos" class="active"><span class="material-icons-outlined">shopping_cart</span> Pedidos</a></li>
+            <li><a href="#" data-page="expedicao"><span class="material-icons-outlined">local_shipping</span> Expedição</a></li>
+            <li><a href="#" data-page="coleta"><span class="material-icons-outlined">done_all</span> Conferência de Coleta</a></li>
+            <li><a href="#" data-page="produtos"><span class="material-icons-outlined">inventory_2</span> Produtos</a></li>
+            <li><a href="#" data-page="anuncios"><span class="material-icons-outlined">campaign</span> Anúncios</a></li>
+            
+            <li class="parent-menu open">
+                <a href="#"><span class="material-icons-outlined">settings</span> Configurações</a>
+                <ul class="submenu">
+                    <li><a href="#" data-page="integracoes"><span class="material-icons-outlined">link</span> Integrações</a></li>
+                    <li><a href="#" data-page="empresas"><span class="material-icons-outlined">apartment</span> Empresas</a></li>
+                    <li><a href="#" data-page="configuracoes"><span class="material-icons-outlined">build</span> Configurações Gerais</a></li>
+                    <li><a href="#" data-page="notas-fiscais"><span class="material-icons-outlined">receipt_long</span> Notas Fiscais</a></li>
+                    <li><a href="#" data-page="mensagens"><span class="material-icons-outlined">email</span> Mensagens</a></li>
+                    <li><a href="#" data-page="plp"><span class="material-icons-outlined">print</span> PLP</a></li>
+                    <li><a href="#" data-page="operador-logistico"><span class="material-icons-outlined">contact_support</span> Operador Logístico</a></li>
+                    <li><a href="#" data-page="transportadoras"><span class="material-icons-outlined">departure_board</span> Transportadoras</a></li>
+                </ul>
+            </li>
+            
+            <li><a href="#" data-page="relatorios"><span class="material-icons-outlined">bar_chart</span> Relatórios</a></li>
+        </ul>
+        <div class="user-info">
+            <span class="material-icons-outlined">account_circle</span>
+            Usuário Logado
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div id="content">
+        </div>
+
+    <script src="script.js"></script> 
 </body>
 </html>
