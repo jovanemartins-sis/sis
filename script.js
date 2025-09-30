@@ -5,7 +5,6 @@ const OAUTH_URL = 'https://auth.mercadolivre.com.br/authorization?response_type=
 let authorizationSuccessMessage = null;
 
 // Data de hoje (Hardcoded para simular a data atual no ambiente de teste)
-// O sistema só vai mostrar integrações com essa data.
 const TODAY_DATE = '2025-09-30'; 
 const YESTERDAY_DATE = '2025-09-29'; // Data para as integrações antigas
 
@@ -17,9 +16,7 @@ const YESTERDAY_DATE = '2025-09-29'; // Data para as integrações antigas
 // Adicionamos o campo 'creationDate' para permitir a filtragem por data
 const INITIAL_INTEGRATIONS_MOCK = [
     { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE },
-    // Esta integração falhará no filtro de MARKETPLACE e DATA
     { id: '62306', descricao: 'Mercado Livre - Secundário', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta', creationDate: TODAY_DATE },
-    // Esta integração falhará no filtro de DATA (não é de hoje)
     { id: '62307', descricao: 'Mercado Livre - Antiga OK', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE }
 ];
 
@@ -248,10 +245,17 @@ const pageContent = {
     'plp': `<div class="header"><h2>PLP</h2></div><div class="maintenance-message">Página em Manutenção</div>`
 };
 
+// Pedidos Mock EXPANDIDO para simular sincronização histórica
 const pedidosMock = [
+    // Pedidos Novos (Status Hub: Expedir, Pendente)
     { id: '56556090', idMp: '250927JGM6BK0R6', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Viviane de L.A. Rosa', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 35,00' },
     { id: '56556018', idMp: '250927JGSVEGC', loja: 'SHEIN', tipo: 'Padrão', status: 'to be collected by SHEIN', cliente: 'Josefa Madalena', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 22,48' },
-    { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' }
+    { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' },
+    // Pedidos Históricos (Antigos) - Simulação de puxada histórica
+    { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024', statusHub: 'Completo', avisos: 'Nota emitida', total: 'R$ 150,00' },
+    { id: '40123457', idMp: 'MLB19827365', loja: 'Mercado Livre', tipo: 'Padrão', status: 'shipped', cliente: 'João Pereira', data: '15/05/2024', statusHub: 'Em separação', avisos: 'Produto esgotado', total: 'R$ 99,90' },
+    { id: '40123458', idMp: 'MLB19827366', loja: 'Shopee', tipo: 'Padrão', status: 'CANCELLED', cliente: 'Ana Santos', data: '20/08/2024', statusHub: 'Cancelado', avisos: 'Fraude detectada', total: 'R$ 75,00' },
+    { id: '40123459', idMp: 'MLB19827367', loja: 'Mercado Livre', tipo: 'Flex', status: 'pending', cliente: 'Carlos Alberto', data: '10/09/2025', statusHub: 'Pendente', avisos: 'Aguardando pagamento', total: 'R$ 300,00' }
 ];
 
 
@@ -302,6 +306,13 @@ function renderTable(pedidos) {
         return;
     }
     tableBody.innerHTML = '';
+    
+    // Se não houver pedidos para exibir
+    if (pedidos.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="12" class="no-results">Nenhum pedido encontrado com os filtros atuais.</td></tr>`;
+        return;
+    }
+
     pedidos.forEach(pedido => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -436,14 +447,14 @@ function loadPage(pageName) {
 
     contentArea.innerHTML = pageHtml;
     
-    // RENDERIZAÇÃO DA TABELA DE INTEGRAÇÕES COM OS FILTROS SOLICITADOS
+    // RENDERIZAÇÃO DA TABELA DE DADOS
     if (pageName === 'pedidos') {
-        renderTable(pedidosMock);
+        renderTable(pedidosMock); // Usando a lista de pedidos expandida
         setupFilterButtons();
     } else if (pageName === 'integracoes') {
         const allIntegrations = getIntegracoes();
         
-        // APLICAÇÃO DOS TRÊS FILTROS SOLICITADOS:
+        // APLICAÇÃO DOS TRÊS FILTROS SOLICITADOS NA QUERY ANTERIOR:
         const filteredIntegrations = allIntegrations.filter(i => 
             // 1. Apenas Marketplace "Mercado Livre"
             i.marketplace === 'Mercado Livre' &&
