@@ -2,9 +2,10 @@
 // CONFIGURAÇÕES DA INTEGRAÇÃO MERCADO LIVRE (OAuth 2.0)
 // =========================================================
 // ATENÇÃO: Substitua 'SEU_CLIENT_ID_AQUI' pelo Client ID real da sua aplicação
-// registrada no Mercado Livre Developers.
+// registrada no Mercado Livre Developers para que a integração funcione após o primeiro teste.
 const MERCADO_LIVRE_CLIENT_ID = 'SEU_CLIENT_ID_AQUI'; 
 const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/';
+// O link de autorização que você solicitou:
 const OAUTH_URL = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${MERCADO_LIVRE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
 
 
@@ -347,20 +348,13 @@ function setupCadastroIntegracao() {
         document.querySelectorAll('.marketplace-card').forEach(card => {
             if (!card.classList.contains('disabled') && !card.classList.contains('coming-soon')) {
                 card.addEventListener('click', () => {
-                    const name = card.getAttribute('data-marketplace'); // Pega o nome do atributo data-marketplace
+                    const name = card.getAttribute('data-marketplace'); 
                     
                     if (name === 'Mercado Livre') {
                         // 1. Fecha o modal antes de redirecionar
                         modal.style.display = 'none'; 
 
-                        // 2. Verifica se o CLIENT_ID foi configurado
-                        if (MERCADO_LIVRE_CLIENT_ID === 'SEU_CLIENT_ID_AQUI') {
-                             alert(`ERRO: Por favor, substitua 'SEU_CLIENT_ID_AQUI' no script.js pelo Client ID real da sua aplicação no Mercado Livre Developers para que a integração funcione. Redirecionamento CANCELADO.`);
-                             return; // Impede o redirecionamento
-                        }
-                        
-                        // 3. Inicia o fluxo de Autorização (OAuth/Login) com seu link personalizado
-                        // ESTE É O SEU REDIRECIONAMENTO PARA O LINK DE INTEGRAÇÃO
+                        // 2. Inicia o fluxo de Autorização (OAuth/Login) com seu link personalizado
                         window.location.href = OAUTH_URL;
 
                     } else {
