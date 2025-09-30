@@ -4,8 +4,8 @@
 :root {
     --primary-color: #0099ff; /* Azul principal do sistema */
     --primary-dark: #0077cc;
-    --secondary-color: #f0f0f0; /* Fundo da barra lateral */
-    --background-color: #ffffff;
+    --secondary-color: #f0f0f0; /* Fundo da barra lateral e background geral */
+    --background-color: #ffffff; /* Fundo de cards e conteúdo principal */
     --text-color: #333333;
     --light-text: #666666;
     --border-color: #dddddd;
@@ -279,10 +279,12 @@ button {
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     margin-top: 20px;
+    overflow-x: auto; /* Garante que tabelas muito largas tenham scroll horizontal */
 }
 
 table {
     width: 100%;
+    min-width: 800px; /* Evita que tabelas em telas menores fiquem ilegíveis */
     border-collapse: collapse;
 }
 
@@ -586,6 +588,9 @@ tbody tr:hover {
     cursor: pointer;
     font-size: 1.5em;
     color: var(--light-text);
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 /* Grid de Marketplaces */
@@ -611,6 +616,7 @@ tbody tr:hover {
     text-align: center;
     transition: background-color 0.2s, border-color 0.2s;
     position: relative;
+    cursor: pointer;
 }
 
 .marketplace-card img {
@@ -746,6 +752,8 @@ tbody tr:hover {
     border-radius: 4px;
     font-size: 1em;
     transition: border-color 0.2s;
+    /* Ajuste para campos com máscara */
+    line-height: normal; 
 }
 
 .input-item input:focus, .input-item select:focus {
