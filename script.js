@@ -1,61 +1,54 @@
-function loadPage(pageName) {
-    const contentArea = document.getElementById('content');
-    let pageHtml = pageContent[pageName];
+function setupCadastroEmpresasPage() {
+    // Simula a lógica de salvar o cadastro da empresa
+    const salvarBtn = document.querySelector('.salvar-cadastro-empresa');
+    const formContainer = document.querySelector('.cadastro-empresas-form');
 
-    // Lógica para marcar o item do menu como ativo e abrir o menu pai (Integrações)
-    document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
-    document.querySelectorAll('.parent-menu').forEach(p => p.classList.remove('open'));
-    
-    const activeLink = document.querySelector(`a[data-page="${pageName}"]`);
-    if (activeLink) {
-        // Marca o <li> que contém o link como ativo
-        activeLink.closest('li').classList.add('active');
-        
-        // Abre o menu pai, se existir (aplica a classe 'open' ao .parent-menu)
-        const parentMenu = activeLink.closest('.parent-menu');
-        if (parentMenu) {
-            parentMenu.classList.add('open');
-            // Remove a classe 'active' do link pai se for apenas um header de submenu
-            parentMenu.querySelector('a').closest('li').classList.remove('active');
-        }
-    }
+    if (salvarBtn && formContainer) {
+        salvarBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            let allValid = true;
+            const requiredFields = formContainer.querySelectorAll('.input-item.required input, .input-item.required select');
+            
+            // 1. Lógica de Validação
+            requiredFields.forEach(field => {
+                // Remove estilos de erro anteriores
+                field.style.border = '1px solid #ccc'; 
+                
+                // Validação de preenchimento
+                if (field.value.trim() === '' || field.value.includes('Selecione') || field.value.includes('Escolha')) {
+                    field.style.border = '2px solid #e74c3c'; // Destaca o campo com erro
+                    allValid = false;
+                }
+            });
 
+            if (!allValid) {
+                alert("Por favor, preencha todos os campos obrigatórios (marcados em vermelho) antes de salvar.");
+                return;
+            }
 
-    if (pageName === 'integracoes' && authorizationSuccessMessage) {
-        // Exibe o banner de sucesso após o retorno do OAuth
-        const successHtml = `<div class="success-banner"><span class="icon-check">✓</span> ${authorizationSuccessMessage}</div>`;
-        pageHtml = successHtml + pageContent[pageName]; // Concatena o banner com o conteúdo da página
-        authorizationSuccessMessage = null; 
-    }
+            // 2. Simulação de Salvamento (se for válido)
+            
+            // Simulação de coleta de dados
+            const novaRazaoSocial = formContainer.querySelector('input[value="L LOPES DE SOUZA"]').value || "Nova Empresa Mock";
+            const novoCnpj = formContainer.querySelector('input[value="20748410000186"]').value || "99.999.999/9999-99";
 
-    if (typeof pageHtml === 'function') {
-        contentArea.innerHTML = `<div class="maintenance-message">Erro: A página de configuração deve ser carregada via link.</div>`;
-        return;
-    }
-    
-    contentArea.innerHTML = pageHtml;
-    
-    // Chamadas de funções específicas para a página carregada
-    if (pageName === 'pedidos') {
-        renderTable(getPedidosFromActiveIntegrations()); 
-        setupFilterButtons();
-    } else if (pageName === 'integracoes') {
-        // --- LÓGICA DE CARREGAMENTO CORRIGIDA PARA INTEGRAÇÕES ---
-        const allIntegrations = getIntegracoes();
-        
-        // Mock: filtra para mostrar apenas Shopee e a nova ML do dia, mais as em ERRO
-        const filteredIntegrations = allIntegrations.filter(i => 
-            (i.marketplace === 'Mercado Livre' && i.tokenStatus === 'OK' && i.creationDate === TODAY_DATE) ||
-            (i.marketplace === 'Shopee') || 
-            (i.marketplace === 'Mercado Livre' && i.tokenStatus === 'ERRO') ||
-            (i.marketplace === 'Mercado Livre' && i.tokenStatus === 'OK' && i.creationDate !== TODAY_DATE) // Adiciona a Antiga OK
-        );
-        
-        renderIntegracoesTable(filteredIntegrations); 
-        setupCadastroIntegracao();
-    } else if (pageName === 'empresas') {
-        renderEmpresasTable(empresasMock);
-    } else if (pageName === 'cadastrar-empresas') {
-        setupCadastroEmpresasPage();
+            // Simula a criação de um novo objeto de empresa
+            const newEmpresa = {
+                id: (Math.floor(Math.random() * 9000) + 2000).toString(), // Novo ID mock
+                razaoSocial: novaRazaoSocial,
+                cnpj: novoCnpj,
+                vencimento: '30/09/2026',
+                horaVencimento: '10:00'
+            };
+
+            // Adiciona a nova empresa ao mock de dados
+            empresasMock.push(newEmpresa);
+
+            alert(`Empresa "${newEmpresa.razaoSocial}" cadastrada e salva com sucesso (ID: ${newEmpresa.id})!`);
+            
+            // Volta para a página de listagem de empresas
+            loadPage('empresas');
+        });
     }
 }
