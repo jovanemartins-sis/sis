@@ -87,18 +87,18 @@ body {
     background-color: #0056b3;
 }
 
-/* Estilo para Submenu */
+/* Estilo para Submenu - CRUCIAL PARA A INTEGRAÇÃO */
 .submenu {
     list-style: none;
     padding: 0;
     background-color: #2b3035;
-    max-height: 0;
+    max-height: 0; /* Começa escondido */
     overflow: hidden;
     transition: max-height 0.3s ease-in-out;
 }
 
 .parent-menu.open > .submenu {
-    max-height: 500px; /* Valor grande o suficiente para exibir todos os subitens */
+    max-height: 500px; /* Abre o submenu quando a classe 'open' é adicionada pelo JS */
 }
 
 .submenu a {
