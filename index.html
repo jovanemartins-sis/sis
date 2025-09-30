@@ -3,67 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIS - Sistema Integrado de Serviços</title>
-    <link rel="stylesheet" href="style.css"> 
+    <title>SIS - Sistema de Integração Simplificado</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <header id="header">
-        <div class="logo">
-            SIS
-        </div>
-        <div class="user-info">
-            <span class="user-name">Jovane Martins</span>
-            <button class="logout-btn">Sair</button>
-        </div>
-    </header>
-
-    <div id="container">
-        <nav id="sidebar">
-            <ul>
-                <li><a href="#" data-page="inicio"><span class="icon-dashboard"></span> Início</a></li>
-                
-                <li class="parent-menu">
-                    <a href="#" data-page="pedidos"><span class="icon-truck"></span> Pedidos</a>
-                    <ul class="submenu">
-                        <li><a href="#" data-page="pedidos">Listar Pedidos</a></li>
-                        <li><a href="#" data-page="plp">PLP</a></li>
-                    </ul>
-                </li>
-
-                <li><a href="#" data-page="produtos"><span class="icon-box"></span> Produtos</a></li>
-                <li><a href="#" data-page="anuncios"><span class="icon-tag"></span> Anúncios</a></li>
-                
-                <li class="parent-menu">
-                    <a href="#" data-page="expedicao"><span class="icon-scan"></span> Expedição</a>
-                    <ul class="submenu">
-                        <li><a href="#" data-page="expedicao">Painel de Expedição</a></li>
-                        <li><a href="#" data-page="coleta">Conferência de Coleta</a></li>
-                    </ul>
-                </li>
-                
-                <li><a href="#" data-page="mensagens"><span class="icon-message"></span> Mensagens</a></li>
-                <li><a href="#" data-page="notas-fiscais"><span class="icon-file"></span> Notas Fiscais</a></li>
-                
-                <li><a href="#" data-page="integracoes"><span class="icon-settings"></span> **Integrações**</a></li>
-                
-                <li class="parent-menu">
-                    <a href="#" data-page="configuracoes"><span class="icon-settings"></span> Configurações</a>
-                    <ul class="submenu">
-                        <li><a href="#" data-page="configuracoes">Gerais</a></li>
-                        </ul>
-                </li>
-
-                <li><a href="#" data-page="relatorios"><span class="icon-chart"></span> Relatórios</a></li>
-            </ul>
-        </nav>
+    <div id="app-container">
         
-        <main id="content-wrapper">
-            <div id="content">
-                </div>
-        </main>
+        <div id="sidebar">
+            <div class="logo">
+                <img src="logo.png" alt="SIS Logo">
+            </div>
+            <nav>
+                <ul>
+                    <li class="parent-menu">
+                        <a href="#" data-page="inicio">
+                            <span class="icon-house"></span>Início
+                        </a>
+                    </li>
+                    <li class="parent-menu open">
+                        <a href="#" data-page="integracoes">
+                            <span class="icon-gear"></span>Integrações
+                        </a>
+                        <ul class="submenu">
+                            <li class="active">
+                                <a href="#" data-page="pedidos">Pedidos</a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="integracoes">Lojas Integradas</a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="produtos">Produtos
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="anuncios">Anúncios</a>
+                            </li>
+                            </ul>
+                    </li>
+                    <li class="parent-menu">
+                        <a href="#">
+                            <span class="icon-truck"></span>Logística
+                        </a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="#" data-page="expedicao">Expedição</a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="coleta">Conferência de Coleta</a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="plp">PLP</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="parent-menu">
+                        <a href="#">
+                            <span class="icon-chart"></span>Financeiro
+                        </a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="#" data-page="notas-fiscais">Notas Fiscais</a>
+                            </li>
+                            <li>
+                                <a href="#" data-page="relatorios">Relatórios</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="parent-menu">
+                        <a href="#" data-page="mensagens">
+                            <span class="icon-message"></span>Mensagens
+                        </a>
+                    </li>
+                    <li class="parent-menu">
+                        <a href="#" data-page="configuracoes">
+                            <span class="icon-wrench"></span>Configurações
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div id="content">
+            </div>
+
     </div>
 
-    <script src="script.js"></script> 
+    <script src="script.js"></script>
 </body>
 </html>
