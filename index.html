@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProFull Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="dashboard-container">
+    <aside id="sidebar">
+        <div class="logo-container">
+            </div>
+        <nav>
+            <ul>
+                <li><a href="#" data-page="inicio"><img src="inicio-icon.png" alt="Início"> Início</a></li>
+                <li><a href="#" data-page="integracoes"><img src="integracoes-icon.png" alt="Integrações"> Integrações</a></li>
+                <li class="parent-menu">
+                    <a href="#"><img src="pedidos-icon.png" alt="Pedidos"> Pedidos</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-page="pedidos">Pedidos</a></li>
+                        <li><a href="#" data-page="notas-fiscais">Notas Fiscais</a></li>
+                        <li><a href="#" data-page="mensagens">Mensagens</a></li>
+                        <li><a href="#" data-page="plp">PLP</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" data-page="produtos"><img src="produtos-icon.png" alt="Produtos"> Produtos</a></li>
+                <li><a href="#" data-page="anuncios"><img src="anuncios-icon.png" alt="Anúncios"> Anúncios</a></li>
+                <li><a href="#" data-page="expedicao"><img src="expedicao-icon.png" alt="Expedição"> Expedição</a></li>
+                <li><a href="#" data-page="coleta"><img src="coleta-icon.png" alt="Conferência de Coleta"> Conferência de Coleta</a></li>
+                <li><a href="#" data-page="relatorios"><img src="relatorios-icon.png" alt="Relatórios"> Relatórios</a></li>
+                <li><a href="#" data-page="configuracoes"><img src="configuracoes-icon.png" alt="Configurações"> Configurações</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="main-content-wrapper">
+        <header class="top-header">
+            <div class="header-left">
+                </div>
+            <div class="header-right">
+                <button class="support-btn">Precisa de ajuda? Chame o suporte! 🎧</button>
+                <div class="fatura-status">
+                    <p>Fatura paga ✅</p>
+                </div>
+                <a href="#"><img src="bell-icon.png" alt="Notificações" class="icon"></a>
+                <a href="#"><img src="profile-icon.png" alt="Perfil" class="icon"></a>
+            </div>
+        </header>
+
+        <main id="content">
+            </main>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
