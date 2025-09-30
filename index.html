@@ -3,99 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seven Full | Hub de Integração</title>
-    
-    <link rel="stylesheet" href="style.css">
-    
+    <title>Hub de Integrações - Pedidos e Configurações</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
-    
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-
-    <aside id="sidebar">
+    <div id="sidebar">
         <div class="logo">
-            <span class="logo-icon material-symbols-outlined">rocket_launch</span>
-            <span class="logo-text">Seven Full</span> 
+            <span class="material-icons-outlined">apps</span>
+            Hub Integrador
         </div>
-
         <ul id="menu">
-            <li class="active">
-                <a href="#" data-page="pedidos">
-                    <span class="material-icons-outlined">home</span>
-                    Pedidos Padrão
-                </a>
-            </li>
-            
-            <li class="parent-menu open">
-                <a href="#" class="parent-link">
+            <li class="menu-item-header">GERAL</li>
+            <li class="parent-menu active">
+                <a href="#">
                     <span class="material-icons-outlined">shopping_cart</span>
-                    Vendas
+                    Pedidos
+                    <span class="material-icons-outlined arrow">chevron_right</span>
                 </a>
                 <ul class="submenu">
-                    <li><a href="#" data-page="pedidos">Pedidos Padrão</a></li>
-                    <li><a href="#" data-page="pedidos-full-ml">Pedidos FULL</a></li>
-                    <li><a href="#" data-page="expedicao">Expedição</a></li>
-                    <li><a href="#" data-page="coleta">Conferência de Coleta</a></li>
-                    <li><a href="#" data-page="plp">PLP</a></li>
+                    <li class="active"><a href="#" data-page="pedidos">Pedidos Padrão</a></li>
+                    <li><a href="#" data-page="pedidos-flex">Pedidos FLEX</a></li>
+                    <li><a href="#" data-page="pedidos-full-ml">Pedidos FULL ML</a></li>
                 </ul>
             </li>
-            
             <li>
-                <a href="#" data-page="produtos">
+                <a href="#" data-page="envios">
+                    <span class="material-icons-outlined">local_shipping</span>
+                    Envios
+                </a>
+            </li>
+            <li>
+                <a href="#" data-page="estoque">
                     <span class="material-icons-outlined">inventory_2</span>
-                    Produtos
+                    Estoque
+                </a>
+            </li>
+
+            <li class="menu-item-header">CONFIGURAÇÕES</li>
+            <li>
+                <a href="#" data-page="integracoes">
+                    <span class="material-icons-outlined">sync_alt</span>
+                    Integrações
                 </a>
             </li>
             <li>
-                <a href="#" data-page="anuncios">
-                    <span class="material-icons-outlined">campaign</span>
-                    Anúncios
+                <a href="#" data-page="empresas">
+                    <span class="material-icons-outlined">business</span>
+                    Empresas (NF)
                 </a>
             </li>
             <li>
-                <a href="#" data-page="notas-fiscais">
-                    <span class="material-icons-outlined">request_quote</span>
-                    Notas Fiscais
+                <a href="#" data-page="usuarios">
+                    <span class="material-icons-outlined">group</span>
+                    Usuários
                 </a>
-            </li>
-            <li>
-                <a href="#" data-page="mensagens">
-                    <span class="material-icons-outlined">chat_bubble_outline</span>
-                    Mensagens
-                </a>
-            </li>
-            <li>
-                <a href="#" data-page="relatorios">
-                    <span class="material-icons-outlined">bar_chart</span>
-                    Relatórios
-                </a>
-            </li>
-            <li class="parent-menu">
-                <a href="#" class="parent-link">
-                    <span class="material-icons-outlined">settings</span>
-                    Configurações
-                </a>
-                <ul class="submenu">
-                    <li><a href="#" data-page="integracoes">Integrações</a></li>
-                    <li><a href="#" data-page="empresas">Empresas</a></li>
-                    <li><a href="#" data-page="configuracoes">Gerais</a></li>
-                    <li><a href="#" data-page="operador-logistico">Operador Logístico</a></li>
-                    <li><a href="#" data-page="transportadoras">Transportadoras</a></li>
-                </ul>
             </li>
         </ul>
-
         <div class="user-info">
             <span class="material-icons-outlined">account_circle</span>
-            Usuário: Teste
+            Administrador
         </div>
-    </aside>
+    </div>
 
-    <main id="content">
-        </main>
-    
-    <script src="script.js"></script>
+    <div id="main-content">
+        <header>
+            <div class="search-bar">
+                <span class="material-icons-outlined">search</span>
+                <input type="text" placeholder="Buscar pedidos, produtos ou notas...">
+            </div>
+            <div class="header-actions">
+                <button class="icon-button">
+                    <span class="material-icons-outlined">notifications</span>
+                </button>
+                <button class="icon-button">
+                    <span class="material-icons-outlined">help_outline</span>
+                </button>
+            </div>
+        </header>
 
-</body>
+        <div id="content">
+            </div>
+    </div>
+
+    </body>
 </html>
