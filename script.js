@@ -158,6 +158,23 @@ function renderPedidosTable(pedidos) {
                     <option value="Completo">Completo</option>
                 </select>
             </div>
+            <div class="filtro-item">
+                <label for="filtro-tipo">Tipo</label>
+                <select id="filtro-tipo">
+                    <option value="">Todos</option>
+                    <option value="Padrão">Padrão</option>
+                    <option value="FULL">FULL (Fulfillment)</option>
+                    <option value="FLEX">FLEX</option>
+                </select>
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-data-inicial">Data Inicial</label>
+                <input type="date" id="filtro-data-inicial">
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-data-final">Data Final</label>
+                <input type="date" id="filtro-data-final">
+            </div>
             <div class="filtro-item filtro-erro">
                 <label class="toggle-label-inline">
                     Exibir Pedidos com Erro 
