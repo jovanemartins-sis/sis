@@ -1,480 +1,103 @@
-/* =========================================================
-   ESTILOS GERAIS E LAYOUT
-   ========================================================= */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
+/* --- CONFIGURAÇÃO DE INTEGRAÇÃO (NOVA PÁGINA) --- */
 
-#header {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
+.config-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.logo {
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.logout-btn {
-    background: none;
-    border: 1px solid white;
-    color: white;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-#container {
-    display: flex;
-    flex: 1;
-}
-
-/* =========================================================
-   SIDEBAR (MENU LATERAL)
-   ========================================================= */
-#sidebar {
-    width: 250px;
-    background-color: #343a40;
-    color: white;
-    padding-top: 20px;
-    flex-shrink: 0;
-}
-
-#sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-#sidebar li {
-    position: relative;
-}
-
-#sidebar a {
-    color: white;
-    text-decoration: none;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: background-color 0.3s, padding-left 0.3s;
-}
-
-#sidebar a:hover,
-#sidebar li.active > a {
-    background-color: #0056b3;
-}
-
-/* Estilo para Submenu */
-.submenu {
-    list-style: none;
-    padding: 0;
-    background-color: #2b3035;
-    max-height: 0; /* Começa escondido */
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
-}
-
-.parent-menu.open > .submenu {
-    max-height: 500px; /* Abre o submenu quando a classe 'open' é adicionada pelo JS */
-}
-
-.submenu a {
-    padding-left: 40px; /* Recuo para subitens */
-    font-size: 0.9em;
-}
-
-.submenu a:hover {
-    background-color: #004085;
-}
-
-/* =========================================================
-   CONTEÚDO PRINCIPAL
-   ========================================================= */
-#content-wrapper {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-#content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-.header {
     border-bottom: 2px solid #ccc;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.botao-principal {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s;
-}
-
-.botao-principal:hover {
-    background-color: #1e7e34;
-}
-
-.maintenance-message {
-    text-align: center;
-    padding: 50px;
-    font-size: 1.2em;
-    color: #6c757d;
-}
-
-/* =========================================================
-   MENSAGEM DE SUCESSO
-   ========================================================= */
-.success-banner {
-    background-color: #d4edda; /* Verde claro */
-    color: #155724; /* Verde escuro */
-    border: 1px solid #c3e6cb;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 20px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Garante que o checkmark apareça visualmente (usando o ícone mock) */
-.success-banner .icon-check::before {
-    content: "✓"; 
-    font-size: 1.2em;
-    font-weight: 900;
-}
-
-
-/* =========================================================
-   MODAL DE CADASTRO (INTEGRAÇÕES)
-   ========================================================= */
-.cadastro-modal {
-    display: none; /* Escondido por padrão */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4); /* Fundo escuro */
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: #fefefe;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 800px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #eee;
     padding-bottom: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-.close-button {
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: #000;
-    text-decoration: none;
-}
-
-.marketplaces-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-}
-
-.marketplace-card {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-    cursor: pointer;
-    transition: box-shadow 0.2s, border-color 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100px;
-    font-size: 1em;
-    font-weight: bold;
-}
-
-.marketplace-card:hover {
-    border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-}
-
-.marketplace-card img {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 5px;
-}
-
-.marketplace-card.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: #f8f9fa;
-}
-
-.marketplace-card.disabled:hover {
-    border-color: #ccc;
-    box-shadow: none;
-}
-
-.marketplace-card.coming-soon {
-    position: relative;
-    border: 1px dashed #ffc107;
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.marketplace-card.coming-soon .soon-tag {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background-color: #ffc107;
-    color: #343a40;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 0.7em;
-    font-weight: bold;
-    transform: rotate(5deg);
-}
-
-/* =========================================================
-   TABELAS E DETALHES VISUAIS
-   ========================================================= */
-
-.tabela-integracoes-container,
-.tabela-pedidos-container {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
-    text-align: left;
-    white-space: nowrap;
-}
-
-th {
-    background-color: #f8f9fa;
-    font-weight: bold;
+.config-header h2 {
+    font-size: 1.5em;
     color: #333;
 }
 
-tr:nth-child(even) {
-    background-color: #f2f2f2;
+.config-section {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 25px;
 }
 
-tr:hover {
-    background-color: #e9ecef;
+.config-section h3 {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed #e0e0e0;
 }
 
-/* Linha de sem resultados */
-.no-results {
-    text-align: center !important;
-    font-style: italic;
-    color: #6c757d;
-}
-
-/* Status de Token e Fluxo */
-.token-status {
-    padding: 5px 8px;
-    border-radius: 4px;
-    font-size: 0.85em;
-    font-weight: bold;
-}
-
-.token-status.ok {
-    background-color: #28a745;
-    color: white;
-}
-
-.token-status.erro {
-    background-color: #dc3545;
-    color: white;
-}
-
-/* Status Hub */
-.status-hub-expedir {
-    background-color: #ffc107;
-    color: #343a40;
-}
-
-.status-hub-pendente {
-    background-color: #007bff;
-    color: white;
-}
-
-.status-hub-completo {
-    background-color: #28a745;
-    color: white;
-}
-
-/* Outros elementos como filtros e botões de ação */
-.filtros-container {
+/* Toggle Switch Group */
+.toggle-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    border: 1px solid #e9ecef;
+    gap: 20px 40px; /* Mais espaço entre os toggles */
+    margin-bottom: 10px;
 }
 
-.filtro-item {
+.toggle-group.second-row {
+    border-top: 1px dotted #e0e0e0;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.toggle-item {
+    display: flex;
+    align-items: center;
+    width: 250px; /* Tamanho fixo para alinhar em colunas */
+}
+
+.toggle-item label:first-child {
+    font-weight: normal;
+    color: #444;
+    flex-grow: 1; /* Permite que o texto ocupe o espaço */
+    margin-right: 15px;
+}
+
+/* Input Grid */
+.input-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.input-item {
     display: flex;
     flex-direction: column;
-    min-width: 150px;
+    min-width: 200px; /* Largura mínima para os campos */
+    flex-basis: 0; /* Base flexível */
+    flex-grow: 1; /* Permite que cresça para ocupar o espaço */
+    max-width: 250px;
 }
 
-.filtro-item label {
+.input-item label {
     font-size: 0.9em;
+    color: #777;
     margin-bottom: 5px;
-    font-weight: bold;
 }
 
-.filtros-container select,
-.filtros-container input[type="text"],
-.filtros-container input[type="date"] {
+.input-item input[type="text"],
+.input-item select {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-}
-
-.botoes-filtro {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.botoes-acao {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-}
-
-.botao-secundario {
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s;
-}
-
-.botao-secundario:hover {
-    background-color: #5a6268;
-}
-
-/* Switches para filtros */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 45px;
-    height: 25px;
-}
-
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: 0.4s;
-    border-radius: 25px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 17px;
-    width: 17px;
-    left: 4px;
-    bottom: 4px;
+    font-size: 0.95em;
     background-color: white;
-    transition: 0.4s;
-    border-radius: 50%;
 }
 
-input:checked + .slider {
-    background-color: #2196F3;
+.etiquetas-details {
+    margin-top: 20px;
 }
 
-input:checked + .slider:before {
-    transform: translateX(20px);
+/* Ajuste para links na tabela de Integrações */
+#integracoes-table-body .id-link,
+#integracoes-table-body .descricao-link {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+    font-weight: 500;
 }
