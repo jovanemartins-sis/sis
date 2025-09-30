@@ -489,6 +489,12 @@ nav a:hover {
     font-size: 0.95em;
     background-color: white;
 }
+/* Estilo para campos em estado de erro */
+.input-item input.error,
+.input-item select.error {
+    border: 2px solid #e74c3c !important; 
+}
+
 
 /* Toggle Switch CSS (para Configurações) */
 .toggle-group {
