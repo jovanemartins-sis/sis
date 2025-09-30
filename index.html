@@ -1,93 +1,131 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIS - Sistema de Integração Simplificado</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="app-container">
-        
-        <div id="sidebar">
-            <div class="logo">
-                <img src="logo.png" alt="SIS Logo">
+<div class="header config-header">
+    <h2>Cadastrar Empresas</h2>
+    <button class="botao-principal salvar-cadastro-empresa">Salvar</button>
+</div>
+<div class="cadastro-empresas-form">
+    
+    <div class="config-section">
+        <h3>Dados da Empresa</h3>
+        <div class="input-grid form-full-width">
+            <div class="input-item required">
+                <label>CNPJ</label>
+                <input type="text" placeholder="" value="20748410000186">
             </div>
-            <nav>
-                <ul>
-                    <li class="parent-menu">
-                        <a href="#" data-page="inicio">
-                            <span class="icon-house"></span>Início
-                        </a>
-                    </li>
-                    <li class="parent-menu open">
-                        <a href="#" data-page="integracoes">
-                            <span class="icon-gear"></span>Integrações
-                        </a>
-                        <ul class="submenu">
-                            <li class="active">
-                                <a href="#" data-page="pedidos">Pedidos</a>
-                            </li>
-                            <li>
-                                <a href="#" data-page="integracoes">Lojas Integradas</a>
-                            </li>
-                            <li>
-                                <a href="#" data-page="produtos">Produtos
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" data-page="anuncios">Anúncios</a>
-                            </li>
-                            </ul>
-                    </li>
-                    <li class="parent-menu">
-                        <a href="#">
-                            <span class="icon-truck"></span>Logística
-                        </a>
-                        <ul class="submenu">
-                            <li>
-                                <a href="#" data-page="expedicao">Expedição</a>
-                            </li>
-                            <li>
-                                <a href="#" data-page="coleta">Conferência de Coleta</a>
-                            </li>
-                            <li>
-                                <a href="#" data-page="plp">PLP</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="parent-menu">
-                        <a href="#">
-                            <span class="icon-chart"></span>Financeiro
-                        </a>
-                        <ul class="submenu">
-                            <li>
-                                <a href="#" data-page="notas-fiscais">Notas Fiscais</a>
-                            </li>
-                            <li>
-                                <a href="#" data-page="relatorios">Relatórios</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="parent-menu">
-                        <a href="#" data-page="mensagens">
-                            <span class="icon-message"></span>Mensagens
-                        </a>
-                    </li>
-                    <li class="parent-menu">
-                        <a href="#" data-page="configuracoes">
-                            <span class="icon-wrench"></span>Configurações
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            <div class="input-item required">
+                <label>Email</label>
+                <input type="email" placeholder="" maxlength="30" value="compras@llopessouza.com">
+                <span class="char-count">0/30</span>
+            </div>
+            <div class="input-item required">
+                <label>Razão Social</label>
+                <input type="text" placeholder="" value="L LOPES DE SOUZA">
+            </div>
+            <div class="input-item">
+                <label>Nome Fantasia</label>
+                <input type="text" placeholder="" maxlength="25">
+                <span class="char-count">0/25</span>
+            </div>
+            <div class="input-item">
+                <label>Telefone</label>
+                <input type="tel" placeholder="">
+            </div>
+            <div class="input-item required">
+                <label>Inscrição Estadual</label>
+                <input type="text" placeholder="" value="0123456789">
+            </div>
+            <div class="input-item required">
+                <label>Tipo de Empresa</label>
+                <select><option>Selecione o tipo da empresa</option><option>Varejo</option><option selected>Atacado</option></select>
+            </div>
+            <div class="input-item required">
+                <label>CRT da Empresa</label>
+                <select><option>1 - Simples Nacional</option></select>
+            </div>
         </div>
-        
-        <div id="content">
-            </div>
-
     </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+    <div class="config-section">
+        <h3>Nota Fiscal</h3>
+        <div class="input-grid form-full-width">
+            <div class="input-item required">
+                <label>Número da Nota</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item required">
+                <label>Série</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item required">
+                <label>Modelo</label>
+                <input type="text" placeholder="" value="55" readonly>
+            </div>
+            <div class="input-item">
+                <label>Autorizados</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item toggle-item-no-label">
+                <label class="toggle-label-inline">Contingência</label>
+                <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <h3>Endereço</h3>
+        <div class="input-grid form-full-width">
+            <div class="input-item required">
+                <label>Rua</label>
+                <input type="text" placeholder="" maxlength="20">
+                <span class="char-count">0/20</span>
+            </div>
+            <div class="input-item required">
+                <label>Bairro</label>
+                <input type="text" placeholder="" maxlength="20">
+                <span class="char-count">0/20</span>
+            </div>
+            <div class="input-item required">
+                <label>CEP</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item required">
+                <label>Número</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item">
+                <label>Complemento</label>
+                <input type="text" placeholder="">
+            </div>
+                <div class="input-item required">
+                <label>Cidade</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item required">
+                <label>Estado</label>
+                <select><option>Escolha o seu estado</option><option>SP</option><option>MG</option><option>RJ</option></select>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-section">
+        <h3>Responsável Técnico</h3>
+        <div class="input-grid form-full-width">
+            <div class="input-item">
+                <label>CNPJ</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item">
+                <label>Nome</label>
+                <input type="text" placeholder="">
+            </div>
+            <div class="input-item">
+                <label>E-mail</label>
+                <input type="email" placeholder="">
+            </div>
+            <div class="input-item">
+                <label>Telefone</label>
+                <input type="tel" placeholder="">
+            </div>
+        </div>
+    </div>
+    
+</div>
