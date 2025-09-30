@@ -14,7 +14,8 @@ let authorizationSuccessMessage = null;
 // Mock inicial que será usado se nada estiver salvo no localStorage
 const INITIAL_INTEGRATIONS_MOCK = [
     { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
-    { id: '62306', descricao: 'Mercado Livre - Principal', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
+    // **NOVA INTEGRAÇÃO PARA TESTAR O FILTRO (STATUS ERRO)**
+    { id: '62306', descricao: 'Mercado Livre - Secundário', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta' },
     { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
 ];
 
@@ -425,12 +426,17 @@ function loadPage(pageName) {
 
     contentArea.innerHTML = pageHtml;
     
-    // RENDERIZAÇÃO DA TABELA DE INTEGRAÇÕES AGORA CHAMA O getIntegracoes()
+    // RENDERIZAÇÃO DA TABELA DE INTEGRAÇÕES AGORA COM FILTRO (AQUI ESTÁ A MUDANÇA)
     if (pageName === 'pedidos') {
         renderTable(pedidosMock);
         setupFilterButtons();
     } else if (pageName === 'integracoes') {
-        renderIntegracoesTable(getIntegracoes()); 
+        const allIntegrations = getIntegracoes();
+        
+        // APLICAÇÃO DO FILTRO: Apenas integrações com tokenStatus 'OK' (Realizadas)
+        const performedIntegrations = allIntegrations.filter(i => i.tokenStatus === 'OK');
+        
+        renderIntegracoesTable(performedIntegrations); 
         setupCadastroIntegracao();
     }
     setupSidebarMenu();
@@ -505,7 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
             descricao: 'Mercado Livre - Nova Loja', 
             marketplace: 'Mercado Livre',
             idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
-            tokenStatus: 'OK',
+            tokenStatus: 'OK', // Status 'OK' para integração bem-sucedida
             fluxo: 'Emitir Nota/Etiqueta'
         });
 
