@@ -1,12 +1,14 @@
 // =========================================================
 // CONFIGURAÇÕES DA INTEGRAÇÃO MERCADO LIVRE (OAuth 2.0)
-// A URL de autorização está FIXA AQUI para garantir que não haja erro na concatenação:
+// ESTE É O JAVASCRIPT CORRETO
 // =========================================================
 const OAUTH_URL = 'https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=2535848994116239&redirect_uri=https://jovanemartins-sis.github.io/sis/';
 
 
 // =========================================================
 // Conteúdo das Páginas (Mockup)
+// ... (RESTANTE DO CÓDIGO DA VARIÁVEL pageContent)
+// ...
 // =========================================================
 const pageContent = {
     'inicio': `<div class="header"><h2>Início</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
@@ -319,7 +321,7 @@ function setupCadastroIntegracao() {
                         // 1. Fecha o modal antes de redirecionar
                         modal.style.display = 'none'; 
 
-                        // 2. CHAMADA CRÍTICA: Redirecionamento
+                        // 2. Ação de Redirecionamento CORRETA
                         window.location.href = OAUTH_URL; 
 
                     } else {
@@ -400,7 +402,7 @@ function loadPage(pageName) {
         setupFilterButtons();
     } else if (pageName === 'integracoes') {
         renderIntegracoesTable(integracoesMock); 
-        setupCadastroIntegracao(); // <-- A função crítica é chamada aqui
+        setupCadastroIntegracao();
     }
     setupSidebarMenu();
 }
