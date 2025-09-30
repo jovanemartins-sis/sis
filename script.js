@@ -1,3 +1,16 @@
+// =========================================================
+// CONFIGURAÇÕES DA INTEGRAÇÃO MERCADO LIVRE (OAuth 2.0)
+// =========================================================
+// ATENÇÃO: Substitua 'SEU_CLIENT_ID_AQUI' pelo Client ID real da sua aplicação
+// registrada no Mercado Livre Developers.
+const MERCADO_LIVRE_CLIENT_ID = 'SEU_CLIENT_ID_AQUI'; 
+const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/';
+const OAUTH_URL = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${MERCADO_LIVRE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
+
+
+// =========================================================
+// Conteúdo das Páginas (Mockup)
+// =========================================================
 const pageContent = {
     'inicio': `<div class="header"><h2>Início</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'integracoes': `
@@ -214,6 +227,11 @@ const integracoesMock = [
     { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
 ];
 
+
+// =========================================================
+// Funções de Renderização e Lógica
+// =========================================================
+
 function renderTable(pedidos) {
     const tableBody = document.getElementById('pedidos-table-body');
     if (!tableBody) {
@@ -325,19 +343,28 @@ function setupCadastroIntegracao() {
             }
         });
 
-        // Adiciona evento de clique aos cards de Marketplace
+        // Adiciona evento de clique aos cards de Marketplace (ação simulada/redirecionamento)
         document.querySelectorAll('.marketplace-card').forEach(card => {
             if (!card.classList.contains('disabled') && !card.classList.contains('coming-soon')) {
                 card.addEventListener('click', () => {
                     const name = card.textContent.trim().replace('Em breve', '').trim();
-                    modal.style.display = 'none'; // Fecha o modal
                     
                     if (name === 'Mercado Livre') {
-                        // Ação específica: Iniciar o fluxo de Autorização (OAuth/Login)
-                        // REDIRECIONAMENTO PARA A URL FORNECIDA
-                        window.location.href = 'https://www.mercadolivre.com/jms/mlb/lgz/msl/login/H4sIAAAAAAAEA01QXW-DMAz8L3noUwUtHQUhoUr7I1EIhloLJHJMP1b1v89hYpryEvt8vju_lPMjzpqfAVSj4BEcWmS1V8EZHjxNGnsBJietiAxb2aURQ2YCBoqqeaVFI_SfIKS0imkBmTELX_Xg_F1aq5T0MGp4CG02Tt-huyEkdDAuJsbopbgyh9jkeaJnE5A1vXd4I8isn7KOVsATfhtGP18IYvBzhDVHa30PO-sQZha7bVlXZ3mnY_FxrItTsSPokcCyXgjbP6UQMokP_XOT2Mby__rqvRenkTWTsV-qSTElZUh3W738Huhc1IdDVVSVfMqyqNX7B4SOJTZqAQAA/user';
+                        // 1. Fecha o modal antes de redirecionar
+                        modal.style.display = 'none'; 
+
+                        // 2. Verifica se o CLIENT_ID foi configurado
+                        if (MERCADO_LIVRE_CLIENT_ID === 'SEU_CLIENT_ID_AQUI') {
+                             alert(`ERRO: Por favor, substitua 'SEU_CLIENT_ID_AQUI' no script.js pelo Client ID real da sua aplicação no Mercado Livre Developers para que a integração funcione.`);
+                             return; // Impede o redirecionamento
+                        }
+                        
+                        // 3. Inicia o fluxo de Autorização (OAuth/Login)
+                        window.location.href = OAUTH_URL;
+
                     } else {
                         // Ação genérica para outros marketplaces
+                        modal.style.display = 'none'; 
                         alert(`Iniciando o fluxo de cadastro para: ${name}`);
                     }
                 });
