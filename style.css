@@ -87,7 +87,7 @@ body {
     background-color: #0056b3;
 }
 
-/* Estilo para Submenu - CRUCIAL PARA A INTEGRAÇÃO */
+/* Estilo para Submenu */
 .submenu {
     list-style: none;
     padding: 0;
@@ -158,7 +158,7 @@ body {
 }
 
 /* =========================================================
-   MENSAGEM DE SUCESSO (CRÍTICO PARA A NOVA FEATURE)
+   MENSAGEM DE SUCESSO
    ========================================================= */
 .success-banner {
     background-color: #d4edda; /* Verde claro */
@@ -173,7 +173,7 @@ body {
     gap: 10px;
 }
 
-/* Garante que o checkmark apareça visualmente */
+/* Garante que o checkmark apareça visualmente (usando o ícone mock) */
 .success-banner .icon-check::before {
     content: "✓"; 
     font-size: 1.2em;
@@ -328,6 +328,13 @@ tr:nth-child(even) {
 
 tr:hover {
     background-color: #e9ecef;
+}
+
+/* Linha de sem resultados */
+.no-results {
+    text-align: center !important;
+    font-style: italic;
+    color: #6c757d;
 }
 
 /* Status de Token e Fluxo */
