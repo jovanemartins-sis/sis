@@ -8,7 +8,7 @@ let authorizationSuccessMessage = null;
 const TODAY_DATE = '2025-09-30'; 
 const YESTERDAY_DATE = '2025-09-29'; 
 
-// Lista de pedidos ativos (inicialmente vazia, será populada ao carregar a página 'pedidos')
+// Lista de pedidos ativos
 let activePedidosData = [];
 
 
@@ -46,22 +46,17 @@ function saveIntegracoes(integracoes) {
 // MOCK DE PEDIDOS (TODOS OS PEDIDOS POSSÍVEIS)
 // =========================================================
 
-// O campo 'loja' deve mapear para o campo 'descricao' nas integrações
 const pedidosMock = [
-    // Pedidos de loja ativa (Shopee - Principal) - **DEVE APARECER**
+    // DEVE APARECER
     { id: '56556090', idMp: '250927JGM6BK0R6', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Viviane de L.A. Rosa', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 35,00' },
     { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' },
-
-    // Pedido de loja ativa antiga (Mercado Livre - Antiga OK) - **DEVE APARECER**
+    // DEVE APARECER
     { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre - Antiga OK', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024', statusHub: 'Completo', avisos: 'Nota emitida', total: 'R$ 150,00' },
-    
-    // Pedido de loja com token ERRO (Mercado Livre - Secundário) - **NÃO DEVE APARECER**
+    // NÃO DEVE APARECER (Token ERRO)
     { id: '40123457', idMp: 'MLB19827365', loja: 'Mercado Livre - Secundário', tipo: 'Padrão', status: 'shipped', cliente: 'João Pereira', data: '15/05/2024', statusHub: 'Em separação', avisos: 'Produto esgotado', total: 'R$ 99,90' },
-    
-    // Pedido de loja não integrada (SHEIN) - **NÃO DEVE APARECER**
+    // NÃO DEVE APARECER (Loja não integrada no mock)
     { id: '56556018', idMp: '250927JGSVEGC', loja: 'SHEIN - Não Integrada', tipo: 'Padrão', status: 'to be collected by SHEIN', cliente: 'Josefa Madalena', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 22,48' },
-    
-    // Outros pedidos ativos (Shopee) - **DEVE APARECER**
+    // DEVE APARECER
     { id: '40123458', idMp: 'MLB19827366', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'CANCELLED', cliente: 'Ana Santos', data: '20/08/2024', statusHub: 'Cancelado', avisos: 'Fraude detectada', total: 'R$ 75,00' },
     { id: '40123459', idMp: 'MLB19827367', loja: 'Mercado Livre - Antiga OK', tipo: 'Padrão', status: 'pending', cliente: 'Carlos Alberto', data: '10/09/2025', statusHub: 'Pendente', avisos: 'Aguardando pagamento', total: 'R$ 300,00' }
 ];
@@ -84,18 +79,16 @@ function getPedidosFromActiveIntegrations() {
         return activeStores.includes(pedido.loja);
     });
     
-    // Salva o resultado no estado global para que os outros filtros funcionem
     activePedidosData = filteredPedidos; 
     
     return filteredPedidos;
 }
 
 // =========================================================
-// Conteúdo das Páginas (Mockup) - (O restante do conteúdo não mudou)
+// Conteúdo das Páginas (Mockup)
 // =========================================================
 
 const pageContent = {
-    // ... (Conteúdo de outras páginas omitido para brevidade)
     'inicio': `<div class="header"><h2>Início</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'integracoes': `
         <div class="header">
@@ -288,6 +281,134 @@ const pageContent = {
             </table>
         </div>
     `,
+    'configuracao-integracao': (integracao) => `
+        <div class="header config-header">
+            <h2>${integracao.marketplace} - ${integracao.descricao}</h2>
+            <button class="botao-principal salvar-config">Salvar</button>
+        </div>
+        
+        <div class="config-section">
+            <h3>Ativação</h3>
+            <div class="toggle-group">
+                <div class="toggle-item">
+                    <label>Ativar Atribuição Padrão <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>Considerar Volumes <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>Cancelamento Automático <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>Pedidos com Mensagem <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>Pedidos Agendados <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                </div>
+            </div>
+            <div class="toggle-group second-row">
+                 <div class="toggle-item">
+                    <label>Importar Pedidos Flex <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>Faturamento Flex <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                </div>
+                 <div class="toggle-item">
+                    <label>Importar Pedidos Full <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>NFe CNPJ <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>Realizar vínculo automático <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3>Geral</h3>
+            <div class="input-grid">
+                <div class="input-item">
+                    <label>Fluxo de Pedidos</label>
+                    <select><option>Emitir Nota/Etiqueta</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Vínculo de Empresas</label>
+                    <select><option>L LOPES DE SOUZA</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Faturador Padrão</label>
+                    <select><option>Expedy</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Descrição da Nota</label>
+                    <select><option>Marketplace</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Código ERP</label>
+                    <input type="text" placeholder="Código da empresa no ERP">
+                </div>
+            </div>
+        </div>
+        
+        <div class="config-section">
+            <h3>Logística (Etiquetas)</h3>
+            <div class="input-grid">
+                <div class="input-item">
+                    <label>Operador Logístico</label>
+                    <select><option>Selecione uma Transportadora</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Id Loja Bling</label>
+                    <input type="text" placeholder="Id Loja Bling">
+                </div>
+            </div>
+            
+            <div class="input-grid etiquetas-details">
+                <div class="input-item">
+                    <label>Tipo de Etiqueta</label>
+                    <select><option>Marketplace</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Layout de Etiqueta</label>
+                    <select><option>Agregado</option></select>
+                </div>
+                 <div class="input-item">
+                    <label>Descrição de etiqueta agregado</label>
+                    <select><option>Completo</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Quantidade de linhas</label>
+                    <select><option>2</option></select>
+                </div>
+                <div class="input-item">
+                    <label>Tipo da Loja</label>
+                    <select><option>CNPJ</option></select>
+                </div>
+            </div>
+            <div class="toggle-group">
+                <div class="toggle-item">
+                    <label>Imprimir NFe ou Declaração <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+                <div class="toggle-item">
+                    <label>Usar declaração de conteúdo <span class="info-icon">?</span></label>
+                    <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+                </div>
+            </div>
+        </div>
+    `,
+    // ... (restante das páginas) ...
     'produtos': `<div class="header"><h2>Produtos</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'anuncios': `<div class="header"><h2>Anúncios</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'expedicao': `<div class="header"><h2>Expedição</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
@@ -322,8 +443,8 @@ function renderIntegracoesTable(integracoes) {
 
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td class="id-link">${integracao.id}</td>
-            <td>${integracao.descricao}</td>
+            <td class="id-link" data-id="${integracao.id}">${integracao.id}</td>
+            <td class="descricao-link" data-id="${integracao.id}">${integracao.descricao}</td>
             <td><span class="marketplace-logo ${marketplaceClass}">${integracao.marketplace}</span></td>
             <td>${integracao.idEmpresa}</td>
             <td><span class="token-status ${tokenClass}">${integracao.tokenStatus}</span></td>
@@ -339,7 +460,35 @@ function renderIntegracoesTable(integracoes) {
         `;
         tableBody.appendChild(row);
     });
+    
+    // Adiciona o listener para a nova página de configuração
+    document.querySelectorAll('.id-link, .descricao-link').forEach(element => {
+        element.addEventListener('click', (e) => {
+            const integrationId = e.target.getAttribute('data-id');
+            const integracao = getIntegracoes().find(i => i.id === integrationId);
+            
+            if (integracao) {
+                // Chama a função para carregar a nova página de configuração
+                loadConfigPage(integracao);
+            }
+        });
+    });
 }
+
+function loadConfigPage(integracao) {
+    const contentArea = document.getElementById('content');
+    
+    // A função configuracao-integracao no pageContent é uma função que retorna HTML
+    contentArea.innerHTML = pageContent['configuracao-integracao'](integracao);
+    
+    // Adiciona o listener no botão salvar (simulação)
+    document.querySelector('.salvar-config').addEventListener('click', () => {
+        alert(`Configurações para "${integracao.descricao}" salvas com sucesso (simulação)!`);
+    });
+    
+    setupSidebarMenu();
+}
+
 
 function renderTable(pedidos) {
     const tableBody = document.getElementById('pedidos-table-body');
@@ -365,4 +514,252 @@ function renderTable(pedidos) {
             <td>${pedido.status}</td>
             <td>${pedido.cliente}</td>
             <td>${pedido.data}</td>
-            <td><span class
+            <td><span class="status-hub-${pedido.statusHub.toLowerCase().replace(/ /g, '-')}">${pedido.statusHub}</span></td>
+            <td>${pedido.avisos}</td>
+            <td>${pedido.total}</td>
+            <td><button>...</button></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function setupCadastroIntegracao() {
+    const btn = document.querySelector('.cadastrar-integracao');
+    const modal = document.getElementById('cadastro-modal');
+    const closeBtn = document.querySelector('#cadastro-modal .close-button');
+
+    if (btn && modal) {
+        btn.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.marketplace-card').forEach(card => {
+            if (!card.classList.contains('disabled') && !card.classList.contains('coming-soon')) {
+                card.addEventListener('click', () => {
+                    const name = card.getAttribute('data-marketplace'); 
+                    
+                    if (name === 'Mercado Livre') {
+                        modal.style.display = 'none'; 
+                        // Ação de Redirecionamento CORRETA
+                        window.location.href = OAUTH_URL; 
+                    } else {
+                        modal.style.display = 'none'; 
+                        alert(`Iniciando o fluxo de cadastro para: ${name}`);
+                    }
+                });
+            }
+        });
+    }
+}
+
+function filterPedidos() {
+    const lojaFilterValue = document.getElementById('filtro-loja').value.toLowerCase().replace('-principal', '').trim();
+    const statusHubFilterValue = document.getElementById('filtro-status-hub').value.toLowerCase().trim();
+    const idHubFilterValue = document.getElementById('filtro-id-hub').value.trim().toLowerCase();
+    const clienteFilterValue = document.getElementById('filtro-cliente').value.trim().toLowerCase();
+    
+
+    const filteredPedidos = activePedidosData.filter(pedido => {
+        
+        if (lojaFilterValue !== 'todos' && !pedido.loja.toLowerCase().includes(lojaFilterValue)) {
+             return false;
+        }
+        
+        if (statusHubFilterValue !== 'todos' && pedido.statusHub.toLowerCase() !== statusHubFilterValue) {
+            return false;
+        }
+
+        if (idHubFilterValue && pedido.id.toLowerCase().includes(idHubFilterValue) === false) {
+            return false;
+        }
+
+        if (clienteFilterValue && pedido.cliente.toLowerCase().includes(clienteFilterValue) === false) {
+            return false;
+        }
+
+        return true;
+    });
+
+    renderTable(filteredPedidos);
+}
+
+function setupFilterButtons() {
+    const limparFiltroBtn = document.getElementById('limpar-filtro');
+    const aplicarFiltroBtn = document.getElementById('aplicar-filtro');
+
+    if (limparFiltroBtn) {
+        limparFiltroBtn.addEventListener('click', () => {
+            const formElements = document.querySelectorAll('.filtros-container select, .filtros-container input');
+            formElements.forEach(element => {
+                if (element.type === 'checkbox') {
+                    element.checked = false;
+                } else if (element.tagName === 'SELECT') { 
+                    element.value = 'todos'; 
+                } else { 
+                    element.value = ''; 
+                }
+            });
+            renderTable(activePedidosData); 
+        });
+    }
+
+    if (aplicarFiltroBtn) {
+        aplicarFiltroBtn.addEventListener('click', () => {
+            filterPedidos(); 
+        });
+    }
+}
+
+function loadPage(pageName) {
+    const contentArea = document.getElementById('content');
+    let pageHtml = pageContent[pageName];
+
+    if (pageName === 'integracoes' && authorizationSuccessMessage) {
+        const successHtml = `<div class="success-banner"><span class="icon-check">✓</span> ${authorizationSuccessMessage}</div>`;
+        pageHtml = successHtml + pageHtml;
+        authorizationSuccessMessage = null; 
+    }
+
+    // Se for uma função (configuracao-integracao), não pode ser carregada aqui
+    if (typeof pageHtml === 'function') {
+        contentArea.innerHTML = `<div class="maintenance-message">Erro: A página de configuração deve ser carregada via link.</div>`;
+        return;
+    }
+    
+    contentArea.innerHTML = pageHtml;
+    
+    if (pageName === 'pedidos') {
+        const pedidosParaExibir = getPedidosFromActiveIntegrations();
+        renderTable(pedidosParaExibir); 
+        setupFilterButtons();
+    } else if (pageName === 'integracoes') {
+        const allIntegrations = getIntegracoes();
+        
+        const filteredIntegrations = allIntegrations.filter(i => 
+            i.marketplace === 'Mercado Livre' &&
+            i.tokenStatus === 'OK' &&
+            i.creationDate === TODAY_DATE
+        );
+        
+        renderIntegracoesTable(filteredIntegrations); 
+        setupCadastroIntegracao();
+    }
+    setupSidebarMenu();
+}
+
+function setupSidebarMenu() {
+    // Adiciona o comportamento de clique para o menu pai (Parent Menu)
+    document.querySelectorAll('.parent-menu > a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const parentLi = link.closest('.parent-menu');
+            const wasOpen = parentLi.classList.contains('open');
+            
+            document.querySelectorAll('.parent-menu').forEach(p => p.classList.remove('open'));
+            
+            if (!wasOpen) {
+                parentLi.classList.add('open');
+            }
+            
+            const pageName = link.getAttribute('data-page');
+            if (!pageContent[pageName] || !link.closest('.submenu')) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Adiciona o comportamento de clique para todos os links do menu lateral
+    document.querySelectorAll('#sidebar a[data-page]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const pageName = link.getAttribute('data-page');
+
+            document.querySelectorAll('#sidebar li').forEach(li => {
+                li.classList.remove('active');
+            });
+
+            link.closest('li').classList.add('active');
+
+            const parentMenu = link.closest('.parent-menu');
+            if (parentMenu) {
+                parentMenu.classList.add('open');
+            }
+            
+            // Só carrega se não for a página de configuração (que é carregada separadamente)
+            if (pageName !== 'configuracao-integracao') {
+               loadPage(pageName);
+            }
+        });
+    });
+}
+
+
+// =========================================================
+// FUNÇÃO DE INICIALIZAÇÃO (DOMContentLoaded)
+// =========================================================
+document.addEventListener('DOMContentLoaded', () => {
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    let pageToLoad = 'pedidos'; 
+
+    if (urlParams.has('code')) {
+        let integracoesAtuais = getIntegracoes();
+        
+        integracoesAtuais.push({
+            id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
+            descricao: 'Mercado Livre - Nova Loja de Hoje', 
+            marketplace: 'Mercado Livre',
+            idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
+            tokenStatus: 'OK', 
+            fluxo: 'Emitir Nota/Etiqueta',
+            creationDate: TODAY_DATE
+        });
+
+        // Adiciona um pedido mock para a loja recém-criada
+        pedidosMock.push({
+            id: (Math.floor(Math.random() * 90000) + 57000000).toString(),
+            idMp: 'NEWLY-' + (Math.floor(Math.random() * 900000) + 100000),
+            loja: 'Mercado Livre - Nova Loja de Hoje', 
+            tipo: 'Padrão', 
+            status: 'NEW', 
+            cliente: 'Cliente Novo da Integração', 
+            data: TODAY_DATE.split('-').reverse().join('/'), 
+            statusHub: 'Expedir', 
+            avisos: 'Novo da integração', 
+            total: 'R$ 88,88' 
+        });
+
+
+        saveIntegracoes(integracoesAtuais);
+        authorizationSuccessMessage = `Integração com Mercado Livre concluída! A nova loja foi salva e agora é exibida na tabela.`;
+        pageToLoad = 'integracoes'; 
+
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({path: newUrl}, '', newUrl);
+
+    } else if (urlParams.has('error')) {
+        authorizationSuccessMessage = "Erro na integração com o Mercado Livre. Por favor, tente novamente.";
+        pageToLoad = 'integracoes';
+    }
+
+
+    loadPage(pageToLoad);
+    
+    const activeLink = document.querySelector(`[data-page="${pageToLoad}"]`);
+    if (activeLink) {
+        activeLink.closest('li').classList.add('active');
+        const parentMenu = activeLink.closest('.parent-menu');
+        if (parentMenu) {
+            parentMenu.classList.add('open');
+        }
+    }
+});
