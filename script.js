@@ -55,23 +55,23 @@ const pageContent = {
                     <span class="close-button">&times;</span>
                 </div>
                 <div class="marketplaces-grid">
-                    <button class="marketplace-card"><img src="mercadolivre-ico.svg" alt="Mercado Livre">Mercado Livre</button>
-                    <button class="marketplace-card"><img src="shopee-logo.png" alt="Shopee">Shopee</button>
-                    <button class="marketplace-card"><img src="shein-logo.png" alt="SHEIN">SHEIN</button>
-                    <button class="marketplace-card"><img src="magalu-logo.png" alt="Magalu">Magalu</button>
-                    <button class="marketplace-card disabled"><img src="americanas-logo.png" alt="Lojas Americanas">Lojas Americanas</button>
-                    <button class="marketplace-card"><img src="olist-logo.png" alt="Olist">Olist</button>
-                    <button class="marketplace-card"><img src="netshoes-logo.png" alt="Netshoes">Netshoes</button>
-                    <button class="marketplace-card"><img src="bling-logo.png" alt="Bling">Bling!</button>
-                    <button class="marketplace-card"><img src="yampi-logo.png" alt="Yampi">Yampi</button>
-                    <button class="marketplace-card"><img src="tray-logo.png" alt="Tray">Tray</button>
-                    <button class="marketplace-card"><img src="kwai-logo.png" alt="Kwai">Kwai</button>
-                    <button class="marketplace-card"><img src="irroba-logo.png" alt="Irroba">Irroba</button>
-                    <button class="marketplace-card"><img src="loja-integrada-logo.png" alt="Loja Integrada">Loja Integrada</button>
-                    <button class="marketplace-card"><img src="bagy-logo.png" alt="Bagy">Bagy</button>
-                    <button class="marketplace-card"><img src="nuvemshop-logo.png" alt="Nuvemshop">Nuvemshop</button>
-                    <button class="marketplace-card"><img src="tiktok-logo.png" alt="TikTok">TikTok</button>
-                    <button class="marketplace-card coming-soon"><img src="shopify-logo.png" alt="Shopify">Shopify <span class="soon-tag">Em breve</span></button>
+                    <button class="marketplace-card" data-marketplace="Mercado Livre"><img src="mercadolivre-ico.svg" alt="Mercado Livre">Mercado Livre</button>
+                    <button class="marketplace-card" data-marketplace="Shopee"><img src="shopee-logo.png" alt="Shopee">Shopee</button>
+                    <button class="marketplace-card" data-marketplace="SHEIN"><img src="shein-logo.png" alt="SHEIN">SHEIN</button>
+                    <button class="marketplace-card" data-marketplace="Magalu"><img src="magalu-logo.png" alt="Magalu">Magalu</button>
+                    <button class="marketplace-card disabled" data-marketplace="Lojas Americanas"><img src="americanas-logo.png" alt="Lojas Americanas">Lojas Americanas</button>
+                    <button class="marketplace-card" data-marketplace="Olist"><img src="olist-logo.png" alt="Olist">Olist</button>
+                    <button class="marketplace-card" data-marketplace="Netshoes"><img src="netshoes-logo.png" alt="Netshoes">Netshoes</button>
+                    <button class="marketplace-card" data-marketplace="Bling!"><img src="bling-logo.png" alt="Bling">Bling!</button>
+                    <button class="marketplace-card" data-marketplace="Yampi"><img src="yampi-logo.png" alt="Yampi">Yampi</button>
+                    <button class="marketplace-card" data-marketplace="Tray"><img src="tray-logo.png" alt="Tray">Tray</button>
+                    <button class="marketplace-card" data-marketplace="Kwai"><img src="kwai-logo.png" alt="Kwai">Kwai</button>
+                    <button class="marketplace-card" data-marketplace="Irroba"><img src="irroba-logo.png" alt="Irroba">Irroba</button>
+                    <button class="marketplace-card" data-marketplace="Loja Integrada"><img src="loja-integrada-logo.png" alt="Loja Integrada">Loja Integrada</button>
+                    <button class="marketplace-card" data-marketplace="Bagy"><img src="bagy-logo.png" alt="Bagy">Bagy</button>
+                    <button class="marketplace-card" data-marketplace="Nuvemshop"><img src="nuvemshop-logo.png" alt="Nuvemshop">Nuvemshop</button>
+                    <button class="marketplace-card" data-marketplace="TikTok"><img src="tiktok-logo.png" alt="TikTok">TikTok</button>
+                    <button class="marketplace-card coming-soon" data-marketplace="Shopify"><img src="shopify-logo.png" alt="Shopify">Shopify <span class="soon-tag">Em breve</span></button>
                 </div>
             </div>
         </div>
@@ -343,11 +343,11 @@ function setupCadastroIntegracao() {
             }
         });
 
-        // Adiciona evento de clique aos cards de Marketplace (ação simulada/redirecionamento)
+        // Adiciona evento de clique aos cards de Marketplace
         document.querySelectorAll('.marketplace-card').forEach(card => {
             if (!card.classList.contains('disabled') && !card.classList.contains('coming-soon')) {
                 card.addEventListener('click', () => {
-                    const name = card.textContent.trim().replace('Em breve', '').trim();
+                    const name = card.getAttribute('data-marketplace'); // Pega o nome do atributo data-marketplace
                     
                     if (name === 'Mercado Livre') {
                         // 1. Fecha o modal antes de redirecionar
@@ -355,11 +355,12 @@ function setupCadastroIntegracao() {
 
                         // 2. Verifica se o CLIENT_ID foi configurado
                         if (MERCADO_LIVRE_CLIENT_ID === 'SEU_CLIENT_ID_AQUI') {
-                             alert(`ERRO: Por favor, substitua 'SEU_CLIENT_ID_AQUI' no script.js pelo Client ID real da sua aplicação no Mercado Livre Developers para que a integração funcione.`);
+                             alert(`ERRO: Por favor, substitua 'SEU_CLIENT_ID_AQUI' no script.js pelo Client ID real da sua aplicação no Mercado Livre Developers para que a integração funcione. Redirecionamento CANCELADO.`);
                              return; // Impede o redirecionamento
                         }
                         
                         // 3. Inicia o fluxo de Autorização (OAuth/Login) com seu link personalizado
+                        // ESTE É O SEU REDIRECIONAMENTO PARA O LINK DE INTEGRAÇÃO
                         window.location.href = OAUTH_URL;
 
                     } else {
