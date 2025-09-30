@@ -359,7 +359,7 @@ function setupCadastroIntegracao() {
                              return; // Impede o redirecionamento
                         }
                         
-                        // 3. Inicia o fluxo de Autorização (OAuth/Login)
+                        // 3. Inicia o fluxo de Autorização (OAuth/Login) com seu link personalizado
                         window.location.href = OAUTH_URL;
 
                     } else {
