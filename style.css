@@ -173,7 +173,7 @@ body {
     gap: 10px;
 }
 
-/* Se você não estiver usando ícones, isso garante o checkmark */
+/* Garante que o checkmark apareça visualmente */
 .success-banner .icon-check::before {
     content: "✓"; 
     font-size: 1.2em;
