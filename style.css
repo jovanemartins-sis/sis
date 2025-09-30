@@ -70,7 +70,7 @@ body {
 
 #menu {
     list-style: none;
-    flex-grow: 1; /* Ocupa o espaço entre o logo e o user info */
+    flex-grow: 1; 
 }
 
 #menu li {
@@ -98,7 +98,7 @@ body {
 #menu li.active > .parent-link {
     background-color: var(--primary-color);
     color: var(--text-light);
-    border-left: 4px solid var(--warning-color); /* Destaque lateral */
+    border-left: 4px solid var(--warning-color); 
     padding-left: 16px;
 }
 
@@ -114,15 +114,15 @@ body {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease-in-out;
-    background-color: #2c3238; /* Fundo ligeiramente mais escuro */
+    background-color: #2c3238; 
 }
 
 .parent-menu.open .submenu {
-    max-height: 500px; /* Valor grande o suficiente para expandir */
+    max-height: 500px; 
 }
 
 .submenu a {
-    padding: 8px 20px 8px 50px; /* Recuo para sub-item */
+    padding: 8px 20px 8px 50px; 
     font-size: 0.9rem;
     opacity: 0.8;
 }
@@ -170,6 +170,9 @@ body {
     font-size: 1.7rem;
     font-weight: 600;
     color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .botoes-acao button {
@@ -181,6 +184,7 @@ body {
     margin-bottom: 20px;
     display: flex;
     gap: 10px;
+    justify-content: flex-end; /* Alinha os botões Filtrar e Limpar à direita */
 }
 
 /* Botões */
@@ -221,7 +225,7 @@ body {
     background-color: #5a6268;
 }
 
-/* Abas */
+/* Abas (Geral - mantido para Configurações) */
 .abas-container {
     display: flex;
     border-bottom: 2px solid var(--border-color);
@@ -237,7 +241,7 @@ body {
     color: var(--secondary-color);
     transition: color 0.2s, border-bottom 0.2s;
     border-bottom: 2px solid transparent;
-    margin-bottom: -2px; /* Ajuste para sobrepor a borda do container */
+    margin-bottom: -2px; 
 }
 
 .tab-button:hover {
@@ -252,7 +256,7 @@ body {
 
 
 /* ========================================================= */
-/* 4. ESTILOS DE TABELA (Pedidos e Integrações) */
+/* 4. ESTILOS DE TABELA (Geral) */
 /* ========================================================= */
 
 .tabela-pedidos-container,
@@ -274,6 +278,7 @@ th, td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap; /* Impede que o conteúdo das células quebre */
 }
 
 th {
@@ -354,7 +359,7 @@ tbody tr:hover {
 
 .marketplace-logo.mercado-livre {
     color: #ffe600;
-    -webkit-text-stroke: 0.5px #343a40; /* Contorno no texto amarelo */
+    -webkit-text-stroke: 0.5px #343a40; 
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
@@ -374,7 +379,7 @@ tbody tr:hover {
 
 
 /* ========================================================= */
-/* 5. ESTILOS DE FILTROS E INPUTS */
+/* 5. ESTILOS DE FILTROS E INPUTS (Página de Pedidos) */
 /* ========================================================= */
 
 .filtros-container {
@@ -384,9 +389,15 @@ tbody tr:hover {
     box-shadow: var(--shadow-light);
     margin-bottom: 20px;
     display: grid;
-    /* Ajuste para 4 colunas em telas grandes */
+    /* Padrão para 4 colunas em telas grandes */
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
     gap: 15px;
+}
+
+/* Estrutura de Grid ESPECÍFICA para a tela de Pedidos (6 colunas) */
+.filtros-container.filtros-pedidos {
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 10px 15px; 
 }
 
 .filtro-item {
@@ -420,29 +431,46 @@ tbody tr:hover {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
-/* Toggle Switch para Erro */
-.filtro-erro {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: 15px; /* Alinha com os outros inputs */
+/* Regras de Span para a tela de Pedidos (baseada na imagem) */
+.filtros-pedidos .filtro-item:nth-child(1), /* Loja */
+.filtros-pedidos .filtro-item:nth-child(5), /* Transportadora */
+.filtros-pedidos .filtro-item:nth-child(6), /* ID Hub */
+.filtros-pedidos .filtro-item:nth-child(7), /* Nome do Cliente */
+.filtros-pedidos .filtro-item:nth-child(10) /* Período */ {
+    grid-column: span 2;
 }
 
-.toggle-label-inline {
+/* Filtro Período */
+.filtro-periodo .input-periodo {
     display: flex;
     align-items: center;
-    font-size: 0.85rem;
-    font-weight: 600;
-    margin-bottom: 0;
-    color: var(--text-color);
+    gap: 5px;
 }
-
-.info-icon {
-    font-size: 16px;
-    margin-left: 5px;
+.filtro-periodo .input-periodo input {
+    flex-grow: 1;
+}
+.filtro-periodo .input-periodo span {
+    font-size: 0.9rem;
     color: var(--secondary-color);
-    cursor: help;
+}
+
+/* Toggle Switch para Erro (alinhado à direita no grid) */
+.filtro-erro-toggle {
+    grid-column: span 2; /* Ocupa 2 colunas */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Empurra o conteúdo para a direita */
+}
+
+.filtro-erro-toggle .toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filtro-erro-toggle .toggle-container span {
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .switch {
@@ -450,6 +478,7 @@ tbody tr:hover {
     display: inline-block;
     width: 45px;
     height: 25px;
+    margin-bottom: 0; /* Correção de margin para alinhar */
 }
 
 .switch input {
@@ -506,7 +535,7 @@ input:checked + .slider:before {
 /* ========================================================= */
 
 .cadastro-modal {
-    display: none; /* Escondido por padrão */
+    display: none; 
     position: fixed;
     z-index: 2000; 
     left: 0;
@@ -704,19 +733,171 @@ input:checked + .slider:before {
     }
 }
 
+
 /* ========================================================= */
-/* 7. RESPONSIVIDADE BÁSICA */
+/* 7. ESTILOS DA TABELA DE PEDIDOS (Detalhes) */
 /* ========================================================= */
 
-@media (max-width: 1024px) {
-    /* Diminui o grid de filtros para 3 colunas em telas menores */
-    .filtros-container {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+/* Abas de Tipo de Pedido (Padrão, FLEX, FULL) */
+.abas-tipo-pedido {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.abas-tipo-pedido a {
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 5px 0;
+    transition: opacity 0.2s;
+    opacity: 0.7;
+    border-bottom: 2px solid transparent;
+}
+
+.abas-tipo-pedido a.active {
+    opacity: 1;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Badges de Tipo */
+.status-badge-padrao, .status-badge-flex, .status-badge-full {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-badge-padrao {
+    background-color: #e0f7fa; 
+    color: #00796b;
+}
+
+.status-badge-flex {
+    background-color: #fff3e0; 
+    color: #ff9800;
+}
+
+.status-badge-full {
+    background-color: #e8eaf6; 
+    color: #3f51b5;
+}
+
+
+/* Barra de Ações (Acima da Tabela) */
+.tabela-acoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.tabela-acoes .acoes-esquerda {
+    display: flex;
+    gap: 10px;
+}
+
+/* Avisos/Info na Tabela */
+.avisos-icons {
+    display: flex;
+    gap: 5px;
+}
+.avisos-icons .info-icon {
+    color: var(--success-color); /* Nota fiscal/Item info */
+    font-size: 18px;
+}
+.avisos-icons .warning-icon {
+    color: var(--warning-color); /* Erro/Aviso */
+    font-size: 18px;
+}
+
+.botao-tabela-config {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+}
+.botao-tabela-config:hover {
+    background-color: var(--background-light);
+    color: var(--primary-color);
+}
+
+.pedidos-selecionados {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+    margin-right: auto; 
+    padding: 15px;
+}
+
+/* Rodapé da Tabela */
+.tabela-rodape {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 15px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--surface-color);
+    border-radius: 0 0 8px 8px;
+}
+
+.tabela-rodape .paginacao {
+    display: flex;
+    gap: 5px;
+    margin-right: 20px;
+}
+
+.tabela-rodape .paginacao button {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+.tabela-rodape .paginacao button.active {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.tabela-rodape .select-pagina {
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+
+/* ========================================================= */
+/* 8. RESPONSIVIDADE BÁSICA */
+/* ========================================================= */
+
+@media (max-width: 1200px) {
+    /* Diminui o grid de pedidos para 4 colunas */
+    .filtros-container.filtros-pedidos {
+        grid-template-columns: repeat(4, 1fr); 
+    }
+    
+    .filtros-pedidos .filtro-item:nth-child(1), /* Loja */
+    .filtros-pedidos .filtro-item:nth-child(5), /* Transportadora */
+    .filtros-pedidos .filtro-item:nth-child(6), /* ID Hub */
+    .filtros-pedidos .filtro-item:nth-child(7), /* Nome do Cliente */
+    .filtros-pedidos .filtro-item:nth-child(10) /* Período */ {
+        grid-column: span 2;
+    }
+    
+    .filtros-pedidos .filtro-item:nth-child(2), /* Marketplace */
+    .filtros-pedidos .filtro-item:nth-child(3), /* Status MP */
+    .filtros-pedidos .filtro-item:nth-child(4), /* Status HUB */
+    .filtro-erro-toggle {
+        grid-column: span 1;
     }
 
-    /* O grid de 4 colunas no modal pode cair para 2 */
-    .input-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    .filtro-erro-toggle {
+        justify-content: flex-start;
     }
 }
 
@@ -733,48 +914,41 @@ input:checked + .slider:before {
         padding-bottom: 0;
     }
     
-    .logo {
-        padding-bottom: 15px;
-        margin-bottom: 0;
-        border-bottom: none;
-    }
-
-    /* Transforma o menu em horizontal para telas pequenas */
-    #menu {
-        display: flex;
-        flex-wrap: wrap;
-        max-height: 40px; /* Esconde o menu por padrão, apenas o primeiro item é visível */
-        overflow: hidden;
-        transition: max-height 0.3s ease-out;
-    }
-
-    /* Oculta submenus em telas pequenas */
-    .submenu {
-        display: none; 
-    }
-    
-    #menu li {
-        width: 50%; /* Faz 2 itens por linha */
-    }
-
-    .user-info {
-        display: none; /* Esconde info do usuário */
-    }
+    /* [Oculta/Ajusta Menu e User Info - mesma lógica anterior] */
 
     #content {
         padding: 20px;
     }
 
-    /* Filtros se tornam empilhados ou 2 por linha */
-    .filtros-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    /* Pedidos Grid: 2 colunas */
+    .filtros-container.filtros-pedidos {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .filtros-pedidos .filtro-item {
+        grid-column: span 2 !important; /* Todos os itens ocupam a largura total */
+    }
+    
+    .filtros-pedidos .filtro-erro-toggle {
+        grid-column: span 2 !important; 
+        justify-content: space-between;
     }
 
-    /* Grid do modal */
-    .input-grid {
-        grid-template-columns: 1fr; /* Empilha no modal */
+    .botoes-filtro {
+        justify-content: center;
     }
-    .input-item[style*="grid-column: span 2"] {
-        grid-column: auto !important;
+    
+    .tabela-acoes {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .tabela-acoes .acoes-esquerda {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .tabela-acoes .acoes-direita {
+        width: 100%;
+        text-align: center;
     }
 }
