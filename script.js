@@ -739,7 +739,7 @@ function setupCadastroIntegracao() {
     const modal = document.getElementById('cadastro-modal');
     const closeBtn = document.querySelector('#cadastro-modal .close-button');
     
-    // NOVO: Seleciona o modal e botão de fechar da Shopee
+    // Seleciona o modal e botão de fechar da Shopee
     const shopeeModal = document.getElementById('shopee-modal');
     const shopeeCloseBtn = document.querySelector('.shopee-close-button');
     const salvarShopeeBtn = document.getElementById('salvar-shopee');
@@ -779,7 +779,7 @@ function setupCadastroIntegracao() {
         });
     }
     
-    // NOVO: Lógica de salvamento para Shopee
+    // Lógica de salvamento para Shopee
     if (salvarShopeeBtn) {
         salvarShopeeBtn.addEventListener('click', () => {
             const descricao = document.getElementById('shopee-descricao').value;
