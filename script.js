@@ -3,7 +3,7 @@
 // =========================================================
 const MERCADO_LIVRE_CLIENT_ID = '2535848994116239'; // SEU Client ID
 const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/';
-// O link de autorização exato que você solicitou:
+// ESTA É A URL DE AUTORIZAÇÃO CORRETA:
 const OAUTH_URL = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${MERCADO_LIVRE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
 
 
@@ -321,7 +321,7 @@ function setupCadastroIntegracao() {
                         // 1. Fecha o modal antes de redirecionar
                         modal.style.display = 'none'; 
 
-                        // 2. Inicia o fluxo de Autorização (OAuth/Login) com o seu link de integração
+                        // 2. Inicia o fluxo de Autorização (OAuth/Login) com a URL CORRETA
                         window.location.href = OAUTH_URL; 
 
                     } else {
