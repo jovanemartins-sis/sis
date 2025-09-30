@@ -226,20 +226,23 @@ nav a:hover {
 }
 
 .tabela-integracoes-container,
-.tabela-pedidos-container {
+.tabela-pedidos-container,
+.tabela-empresas-container {
     width: 100%;
     overflow-x: auto;
 }
 
 .tabela-integracoes-container table,
-.tabela-pedidos-container table {
+.tabela-pedidos-container table,
+.tabela-empresas-container table {
     width: 100%;
     border-collapse: collapse;
     background-color: white;
 }
 
 .tabela-integracoes-container th,
-.tabela-pedidos-container th {
+.tabela-pedidos-container th,
+.tabela-empresas-container th {
     background-color: #f8f8f8;
     color: #34495e;
     padding: 10px 15px;
@@ -249,7 +252,8 @@ nav a:hover {
 }
 
 .tabela-integracoes-container td,
-.tabela-pedidos-container td {
+.tabela-pedidos-container td,
+.tabela-empresas-container td {
     padding: 10px 15px;
     border-bottom: 1px solid #eee;
     font-size: 0.9em;
@@ -715,6 +719,8 @@ input:checked + .slider:before {
 }
 
 .input-item input[type="text"],
+.input-item input[type="email"],
+.input-item input[type="tel"],
 .input-item select {
     padding: 8px;
     border: 1px solid #ccc;
@@ -725,4 +731,92 @@ input:checked + .slider:before {
 
 .etiquetas-details {
     margin-top: 20px;
+}
+
+
+/* =========================================================
+   PÁGINA EMPRESAS
+   ========================================================= */
+
+.tabela-empresas-container .link-like {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tabela-empresas-container .time-detail {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    display: block; 
+}
+
+.tabela-empresas-container button.link-like {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #3498db;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+
+/* =========================================================
+   PÁGINA CADASTRAR EMPRESAS (FORMULÁRIO)
+   ========================================================= */
+
+.cadastro-empresas-form {
+    padding: 0;
+}
+
+/* Modificações específicas para os campos do formulário de cadastro */
+.cadastro-empresas-form .input-grid {
+    /* Usa Grid para melhor controle de colunas em formulários longos */
+    display: grid; 
+    /* Colunas responsivas: min de 180px, cresce até preencher o espaço disponível (1fr) */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+}
+
+.cadastro-empresas-form .input-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    flex-grow: 1;
+    /* Remove a limitação de largura para que o grid funcione bem */
+    max-width: none; 
+    position: relative;
+}
+
+/* Estilo para marcar campos obrigatórios */
+.cadastro-empresas-form .input-item.required label:before {
+    content: '*';
+    color: #e74c3c; /* Vermelho vibrante */
+    margin-right: 4px;
+    font-weight: bold;
+}
+
+/* Ajuste para o item de Contingência (Toggle) */
+.input-item.toggle-item-no-label {
+    /* Garante que o toggle switch se alinhe verticalmente com os campos de texto */
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 15px; 
+}
+
+.toggle-item-no-label .toggle-label-inline {
+    /* Label de "Contingência" */
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 0;
+    margin-right: 15px;
+}
+
+/* Estilo para a contagem de caracteres */
+.char-count {
+    font-size: 0.75em;
+    color: #999;
+    align-self: flex-end;
+    margin-top: 2px;
 }
