@@ -1,11 +1,9 @@
 // =========================================================
 // CONFIGURAÇÕES DA INTEGRAÇÃO MERCADO LIVRE (OAuth 2.0)
 // =========================================================
-// ATENÇÃO: Substitua 'SEU_CLIENT_ID_AQUI' pelo Client ID real da sua aplicação
-// registrada no Mercado Livre Developers para que a integração funcione após o primeiro teste.
-const MERCADO_LIVRE_CLIENT_ID = 'SEU_CLIENT_ID_AQUI'; 
-const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/';
-// O link de autorização que você solicitou:
+const MERCADO_LIVRE_CLIENT_ID = '2535848994116239'; // Seu Client ID
+const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/'; // Seu Redirect URI
+// Link de autorização completo
 const OAUTH_URL = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${MERCADO_LIVRE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
 
 
@@ -228,7 +226,6 @@ const integracoesMock = [
     { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
 ];
 
-
 // =========================================================
 // Funções de Renderização e Lógica
 // =========================================================
@@ -354,7 +351,7 @@ function setupCadastroIntegracao() {
                         // 1. Fecha o modal antes de redirecionar
                         modal.style.display = 'none'; 
 
-                        // 2. Inicia o fluxo de Autorização (OAuth/Login) com seu link personalizado
+                        // 2. Inicia o fluxo de Autorização (OAuth/Login) com o seu link de integração
                         window.location.href = OAUTH_URL;
 
                     } else {
