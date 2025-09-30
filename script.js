@@ -6,17 +6,22 @@ let authorizationSuccessMessage = null;
 
 // Data de hoje (Hardcoded para simular a data atual no ambiente de teste)
 const TODAY_DATE = '2025-09-30'; 
-const YESTERDAY_DATE = '2025-09-29'; // Data para as integrações antigas
+const YESTERDAY_DATE = '2025-09-29'; 
+
+// Lista de pedidos ativos (inicialmente vazia, será populada ao carregar a página 'pedidos')
+let activePedidosData = [];
 
 
 // =========================================================
-// GESTÃO DE DADOS PERSISTENTES (LOCAL STORAGE)
+// MOCK DE INTEGRAÇÕES (DADOS PERSISTENTES)
 // =========================================================
 
-// Adicionamos o campo 'creationDate' para permitir a filtragem por data
 const INITIAL_INTEGRATIONS_MOCK = [
+    // Loja Ativa: Pedidos desta loja serão exibidos
     { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE },
-    { id: '62306', descricao: 'Mercado Livre - Secundário', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta', creationDate: TODAY_DATE },
+    // Loja Inativa: Pedidos desta loja NÃO serão exibidos
+    { id: '62306', descricao: 'Mercado Livre - Secundário (ERRO)', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta', creationDate: TODAY_DATE },
+    // Loja Ativa: Pedidos desta loja serão exibidos
     { id: '62307', descricao: 'Mercado Livre - Antiga OK', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE }
 ];
 
@@ -38,10 +43,59 @@ function saveIntegracoes(integracoes) {
 
 
 // =========================================================
-// Conteúdo das Páginas (Mockup)
+// MOCK DE PEDIDOS (TODOS OS PEDIDOS POSSÍVEIS)
+// =========================================================
+
+// O campo 'loja' deve mapear para o campo 'descricao' nas integrações
+const pedidosMock = [
+    // Pedidos de loja ativa (Shopee - Principal)
+    { id: '56556090', idMp: '250927JGM6BK0R6', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Viviane de L.A. Rosa', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 35,00' },
+    { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' },
+
+    // Pedido de loja ativa antiga (Mercado Livre - Antiga OK)
+    { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre - Antiga OK', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024', statusHub: 'Completo', avisos: 'Nota emitida', total: 'R$ 150,00' },
+    
+    // Pedido de loja com token ERRO (Mercado Livre - Secundário (ERRO)) - **SERÁ EXCLUÍDO**
+    { id: '40123457', idMp: 'MLB19827365', loja: 'Mercado Livre - Secundário (ERRO)', tipo: 'Padrão', status: 'shipped', cliente: 'João Pereira', data: '15/05/2024', statusHub: 'Em separação', avisos: 'Produto esgotado', total: 'R$ 99,90' },
+    
+    // Pedido de loja não integrada (SHEIN) - **SERÁ EXCLUÍDO**
+    { id: '56556018', idMp: '250927JGSVEGC', loja: 'SHEIN - Não Integrada', tipo: 'Padrão', status: 'to be collected by SHEIN', cliente: 'Josefa Madalena', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 22,48' },
+    
+    // Outros pedidos ativos
+    { id: '40123458', idMp: 'MLB19827366', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'CANCELLED', cliente: 'Ana Santos', data: '20/08/2024', statusHub: 'Cancelado', avisos: 'Fraude detectada', total: 'R$ 75,00' },
+    { id: '40123459', idMp: 'MLB19827367', loja: 'Mercado Livre - Antiga OK', tipo: 'Padrão', status: 'pending', cliente: 'Carlos Alberto', data: '10/09/2025', statusHub: 'Pendente', avisos: 'Aguardando pagamento', total: 'R$ 300,00' }
+];
+
+
+// =========================================================
+// LÓGICA DE FILTRAGEM POR INTEGRAÇÃO ATIVA
+// =========================================================
+
+function getPedidosFromActiveIntegrations() {
+    const allIntegrations = getIntegracoes();
+    
+    // 1. Coleta as descrições de todas as lojas com Token OK
+    const activeStores = allIntegrations
+        .filter(i => i.tokenStatus === 'OK')
+        .map(i => i.descricao);
+
+    // 2. Filtra o mock de pedidos para incluir apenas pedidos dessas lojas
+    const filteredPedidos = pedidosMock.filter(pedido => {
+        return activeStores.includes(pedido.loja);
+    });
+    
+    // Salva o resultado no estado global para que os outros filtros funcionem
+    activePedidosData = filteredPedidos; 
+    
+    return filteredPedidos;
+}
+
+// =========================================================
+// Conteúdo das Páginas (Mockup) - (O restante do conteúdo não mudou)
 // =========================================================
 
 const pageContent = {
+    // ... (Conteúdo de outras páginas omitido para brevidade)
     'inicio': `<div class="header"><h2>Início</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'integracoes': `
         <div class="header">
@@ -245,19 +299,6 @@ const pageContent = {
     'plp': `<div class="header"><h2>PLP</h2></div><div class="maintenance-message">Página em Manutenção</div>`
 };
 
-// Pedidos Mock EXPANDIDO para simular sincronização histórica
-const pedidosMock = [
-    // Pedidos Novos (Status Hub: Expedir, Pendente)
-    { id: '56556090', idMp: '250927JGM6BK0R6', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Viviane de L.A. Rosa', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 35,00' },
-    { id: '56556018', idMp: '250927JGSVEGC', loja: 'SHEIN', tipo: 'Padrão', status: 'to be collected by SHEIN', cliente: 'Josefa Madalena', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 22,48' },
-    { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' },
-    // Pedidos Históricos (Antigos) - Simulação de puxada histórica
-    { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024', statusHub: 'Completo', avisos: 'Nota emitida', total: 'R$ 150,00' },
-    { id: '40123457', idMp: 'MLB19827365', loja: 'Mercado Livre', tipo: 'Padrão', status: 'shipped', cliente: 'João Pereira', data: '15/05/2024', statusHub: 'Em separação', avisos: 'Produto esgotado', total: 'R$ 99,90' },
-    { id: '40123458', idMp: 'MLB19827366', loja: 'Shopee', tipo: 'Padrão', status: 'CANCELLED', cliente: 'Ana Santos', data: '20/08/2024', statusHub: 'Cancelado', avisos: 'Fraude detectada', total: 'R$ 75,00' },
-    { id: '40123459', idMp: 'MLB19827367', loja: 'Mercado Livre', tipo: 'Flex', status: 'pending', cliente: 'Carlos Alberto', data: '10/09/2025', statusHub: 'Pendente', avisos: 'Aguardando pagamento', total: 'R$ 300,00' }
-];
-
 
 // =========================================================
 // Funções de Renderização e Lógica
@@ -309,7 +350,7 @@ function renderTable(pedidos) {
     
     // Se não houver pedidos para exibir
     if (pedidos.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="12" class="no-results">Nenhum pedido encontrado com os filtros atuais.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="12" class="no-results">Nenhum pedido encontrado. Verifique se as integrações estão ativas.</td></tr>`;
         return;
     }
 
@@ -373,13 +414,14 @@ function setupCadastroIntegracao() {
 }
 
 function filterPedidos() {
+    // Agora o filtro opera sobre a lista de pedidos ativos (activePedidosData)
     const lojaFilterValue = document.getElementById('filtro-loja').value.toLowerCase().replace('-principal', '').trim();
     const statusHubFilterValue = document.getElementById('filtro-status-hub').value.toLowerCase().trim();
     const idHubFilterValue = document.getElementById('filtro-id-hub').value.trim().toLowerCase();
     const clienteFilterValue = document.getElementById('filtro-cliente').value.trim().toLowerCase();
     
 
-    const filteredPedidos = pedidosMock.filter(pedido => {
+    const filteredPedidos = activePedidosData.filter(pedido => {
         
         if (lojaFilterValue !== 'todos' && !pedido.loja.toLowerCase().includes(lojaFilterValue)) {
              return false;
@@ -419,7 +461,8 @@ function setupFilterButtons() {
                     element.value = ''; 
                 }
             });
-            renderTable(pedidosMock); 
+            // Ao limpar, renderiza a lista inicial de pedidos ativos (activePedidosData)
+            renderTable(activePedidosData); 
         });
     }
 
@@ -449,18 +492,16 @@ function loadPage(pageName) {
     
     // RENDERIZAÇÃO DA TABELA DE DADOS
     if (pageName === 'pedidos') {
-        renderTable(pedidosMock); // Usando a lista de pedidos expandida
+        const pedidosParaExibir = getPedidosFromActiveIntegrations();
+        renderTable(pedidosParaExibir); 
         setupFilterButtons();
     } else if (pageName === 'integracoes') {
         const allIntegrations = getIntegracoes();
         
-        // APLICAÇÃO DOS TRÊS FILTROS SOLICITADOS NA QUERY ANTERIOR:
+        // Aplica o filtro de ML, OK e HOJE para a tabela de integrações
         const filteredIntegrations = allIntegrations.filter(i => 
-            // 1. Apenas Marketplace "Mercado Livre"
             i.marketplace === 'Mercado Livre' &&
-            // 2. Apenas Token de Acesso "OK"
             i.tokenStatus === 'OK' &&
-            // 3. Apenas realizadas "HOJE" (baseado na constante TODAY_DATE)
             i.creationDate === TODAY_DATE
         );
         
@@ -533,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- ADICIONA A NOVA INTEGRAÇÃO NO LOCALSTORAGE ---
         let integracoesAtuais = getIntegracoes();
         
-        // Simula que a integração foi realizada, adicionando uma nova loja
+        // Simula que a integração foi realizada, adicionando uma nova loja ATIVA
         integracoesAtuais.push({
             id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
             descricao: 'Mercado Livre - Nova Loja de Hoje', 
@@ -541,8 +582,23 @@ document.addEventListener('DOMContentLoaded', () => {
             idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
             tokenStatus: 'OK', 
             fluxo: 'Emitir Nota/Etiqueta',
-            creationDate: TODAY_DATE // ESSENCIAL: Define a data de hoje
+            creationDate: TODAY_DATE
         });
+
+        // Adiciona um pedido mock para a loja recém-criada para fins de teste
+        pedidosMock.push({
+            id: (Math.floor(Math.random() * 90000) + 57000000).toString(),
+            idMp: 'NEWLY-' + (Math.floor(Math.random() * 900000) + 100000),
+            loja: 'Mercado Livre - Nova Loja de Hoje', 
+            tipo: 'Padrão', 
+            status: 'NEW', 
+            cliente: 'Cliente Novo da Integração', 
+            data: TODAY_DATE.split('-').reverse().join('/'), 
+            statusHub: 'Expedir', 
+            avisos: 'Novo da integração', 
+            total: 'R$ 88,88' 
+        });
+
 
         // Salva a nova lista no localStorage
         saveIntegracoes(integracoesAtuais);
