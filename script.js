@@ -779,7 +779,7 @@ function setupFilterButtons() {
 }
 
 // =========================================================
-// CORREÇÃO E VALIDAÇÃO DA NOVA EMPRESA
+// LÓGICA DE CADASTRO DE EMPRESAS (COM VALIDAÇÃO)
 // =========================================================
 function setupCadastroEmpresasPage() {
     const salvarBtn = document.querySelector('.salvar-cadastro-empresa');
@@ -837,9 +837,6 @@ function setupCadastroEmpresasPage() {
         });
     }
 }
-// =========================================================
-// FIM CORREÇÃO
-// =========================================================
 
 
 function loadPage(pageName) {
@@ -943,10 +940,10 @@ function setupSidebarMenu() {
 
 
 // =========================================================
-// FUNÇÃO DE INICIALIZAÇÃO (DOMContentLoaded)
+// FUNÇÃO DE INICIALIZAÇÃO (GARANTE O CARREGAMENTO)
 // =========================================================
-document.addEventListener('DOMContentLoaded', () => {
-    
+
+function startApp() {
     const urlParams = new URLSearchParams(window.location.search);
     let pageToLoad = 'pedidos'; 
 
@@ -1000,4 +997,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadPage(pageToLoad);
     setupSidebarMenu();
-});
+}
+
+// Inicialização principal - Garante que a função é chamada
+if (document.readyState === 'loading') { 
+    // Se ainda está carregando, espera pelo evento DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', startApp);
+} else {
+    // Se já carregou ('interactive' ou 'complete'), executa a função imediatamente
+    startApp();
+}
+
+// Fim do script.js
