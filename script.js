@@ -17,11 +17,10 @@ function getIntegracoes() {
         { id: '62307', descricao: 'Mercado Livre - Antiga OK', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: '2025-09-28' },
     ];
     let integracoes = JSON.parse(localStorage.getItem('integracoes')) || defaultIntegracoes;
-    // Garante que o item adicionado hoje permaneça mesmo se "ERRO" ou "OK"
     const today = new Date().toISOString().slice(0, 10);
     integracoes = integracoes.map(i => {
         if (i.creationDate === today && i.tokenStatus !== 'ERRO') {
-            i.tokenStatus = 'OK'; // Mantém o status "OK" para itens novos salvos hoje
+            i.tokenStatus = 'OK'; 
         }
         return i;
     });
@@ -43,22 +42,25 @@ function addIntegracao(descricao, marketplace, idEmpresa) {
         descricao: descricao,
         marketplace: marketplace,
         idEmpresa: idEmpresa,
-        tokenStatus: 'OK', // Simula que o token foi gerado com sucesso
+        tokenStatus: 'OK', 
         fluxo: 'Emitir Nota/Etiqueta',
         creationDate: today
     };
 
     integracoes.push(newIntegracao);
     saveIntegracoes(integracoes);
-    addMockPedidos(descricao); // Adiciona um pedido para a nova integração
+    addMockPedidos(descricao);
     return newIntegracao;
 }
 
 function getPedidos() {
     const defaultPedidos = [
-        { id: '56556090', idMp: '250927JGM6BK0R6', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Viviane de L.A. Rosa', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 35,00' },
-        { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' },
-        { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre - Antiga OK', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024', statusHub: 'Completo', avisos: 'Nota emitida', total: 'R$ 150,00' },
+        // Pedido Padrão Shopee
+        { id: '56819121', idMp: '251001UNSDRFU', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Ana Paula Santana de Oliveira', data: '30/09/2025 13:51', statusHub: 'Completo', avisos: '1', total: 'R$ 18,60', transportadora: 'Shopee Xpress' },
+        // Pedido FLEX Shopee
+        { id: '56819122', idMp: '251002FLEXSP', loja: 'Shopee - Principal', tipo: 'FLEX', status: 'PENDING', cliente: 'Roberto Silva', data: '30/09/2025 14:00', statusHub: 'Expedir', avisos: '', total: 'R$ 75,00', transportadora: 'Correios' },
+        // Pedido FULL Mercado Livre (Normalmente não aparece nesta tela, mas vamos deixá-lo para testes)
+        { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre - Antiga OK', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024 10:00', statusHub: 'Completo', avisos: '2', total: 'R$ 150,00', transportadora: 'Mercado Envios' },
     ];
     return JSON.parse(localStorage.getItem('pedidos')) || defaultPedidos;
 }
@@ -77,10 +79,11 @@ function addMockPedidos(lojaDescricao) {
         tipo: 'Padrão',
         status: 'READY_TO_SHIP',
         cliente: 'Cliente Novo Integrado',
-        data: new Date().toLocaleDateString('pt-BR'),
+        data: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         statusHub: 'Expedir',
         avisos: 'Pedido da nova integração!',
-        total: 'R$ 150,00'
+        total: 'R$ 150,00',
+        transportadora: 'Não Definida'
     };
     pedidos.push(newPedido);
     savePedidos(pedidos);
@@ -104,7 +107,6 @@ function addEmpresa(razaoSocial, cnpj) {
         id: newId,
         razaoSocial: razaoSocial,
         cnpj: cnpj,
-        // Mock de dados para os novos campos
         vencimentoCertificado: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toLocaleDateString('pt-BR'),
         horaVencimento: '12:00'
     };
@@ -117,12 +119,35 @@ function addEmpresa(razaoSocial, cnpj) {
 /* FUNÇÕES DE RENDERIZAÇÃO DE PÁGINAS */
 /* ========================================================= */
 
-// 1. Renderiza a Tabela de Pedidos
-function renderPedidosTable(pedidos) {
+// Ícones de Aviso (Simulação baseada na imagem)
+function getAvisosIcons(avisos) {
+    if (avisos.includes('1')) {
+        return `
+            <span class="material-icons-outlined info-icon" title="Nota Fiscal Emitida">receipt_long</span>
+            <span class="material-icons-outlined warning-icon" title="Avisos no Pedido">warning_amber</span>
+        `;
+    }
+     if (avisos.includes('2')) {
+        return `
+            <span class="material-icons-outlined info-icon" title="Nota Fiscal Emitida">receipt_long</span>
+        `;
+    }
+    return '';
+}
+
+// 1. Renderiza a Tabela de Pedidos (Layout refatorado para o padrão da imagem)
+function renderPedidosTable(pedidos, isFullPage = false) {
     const content = document.getElementById('content');
+    
+    // Filtros de Loja e Marketplace para o Select
+    const integracoes = getIntegracoes().filter(i => i.tokenStatus === 'OK');
+    const lojasOptions = integracoes.map(i => `<option value="${i.descricao}">${i.descricao}</option>`).join('');
+    const mpOptions = [...new Set(integracoes.map(i => i.marketplace))]
+                        .map(mp => `<option value="${mp}">${mp}</option>`).join('');
+
     let tableHtml = `
         <div class="header">
-            <h2>Pedidos</h2>
+            <h2><span class="material-icons-outlined">shopping_cart</span> Pedidos ${isFullPage ? 'FULL - Mercado Livre' : 'Padrão'}</h2>
             <div class="botoes-acao">
                 <button class="botao-secundario">
                     <span class="material-icons-outlined">refresh</span>
@@ -134,103 +159,156 @@ function renderPedidosTable(pedidos) {
                 </button>
             </div>
         </div>
-
-        <div class="filtros-container">
-            <div class="filtro-item">
-                <label for="filtro-id">ID Externo</label>
-                <input type="text" id="filtro-id" placeholder="Ex: MLB12345678">
-            </div>
+        
+        <div class="filtros-container filtros-pedidos">
             <div class="filtro-item">
                 <label for="filtro-loja">Loja</label>
                 <select id="filtro-loja">
                     <option value="">Todas</option>
-                    <option value="Shopee - Principal">Shopee - Principal</option>
-                    <option value="Mercado Livre - Antiga OK">Mercado Livre - Antiga OK</option>
+                    ${lojasOptions}
                 </select>
             </div>
             <div class="filtro-item">
-                <label for="filtro-status">Status HUB</label>
+                <label for="filtro-marketplace">Marketplace</label>
+                <select id="filtro-marketplace">
+                    <option value="">Todos</option>
+                    ${mpOptions}
+                </select>
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-status">Status MP</label>
                 <select id="filtro-status">
+                    <option value="">Todos</option>
+                    <option value="PROCESSED">Processado</option>
+                    <option value="PENDING">Pendente</option>
+                    <option value="delivered">Entregue</option>
+                </select>
+            </div>
+            <div class="filtro-item">
+                <label for="filtro-status-hub">Status Hub</label>
+                <select id="filtro-status-hub">
                     <option value="">Todos</option>
                     <option value="Expedir">Expedir</option>
                     <option value="Pendente">Pendente</option>
-                    <option value="Em separação">Em Separação</option>
                     <option value="Completo">Completo</option>
                 </select>
             </div>
             <div class="filtro-item">
-                <label for="filtro-tipo">Tipo</label>
-                <select id="filtro-tipo">
+                <label for="filtro-transportadora">Transportadora</label>
+                <select id="filtro-transportadora">
                     <option value="">Todos</option>
-                    <option value="Padrão">Padrão</option>
-                    <option value="FULL">FULL (Fulfillment)</option>
-                    <option value="FLEX">FLEX</option>
+                    <option value="Shopee Xpress">Shopee Xpress</option>
+                    <option value="Mercado Envios">Mercado Envios</option>
                 </select>
             </div>
             <div class="filtro-item">
-                <label for="filtro-data-inicial">Data Inicial</label>
-                <input type="date" id="filtro-data-inicial">
+                <label for="filtro-id-hub">ID Hub</label>
+                <input type="text" id="filtro-id-hub">
+            </div>
+
+            <div class="filtro-item">
+                <label for="filtro-cliente">Nome do Cliente</label>
+                <input type="text" id="filtro-cliente">
             </div>
             <div class="filtro-item">
-                <label for="filtro-data-final">Data Final</label>
-                <input type="date" id="filtro-data-final">
+                <label for="filtro-id-mp">ID Marketplace</label>
+                <input type="text" id="filtro-id-mp">
             </div>
-            <div class="filtro-item filtro-erro">
-                <label class="toggle-label-inline">
-                    Exibir Pedidos com Erro 
-                    <span class="material-symbols-outlined info-icon" title="Exibe pedidos que possuem erros ou avisos na importação.">info</span>
-                </label>
-                <label class="switch">
-                    <input type="checkbox" id="filtro-com-erro">
-                    <span class="slider round"></span>
-                </label>
+            <div class="filtro-item">
+                <label for="filtro-id-carrinho">ID do Carrinho</label>
+                <input type="text" id="filtro-id-carrinho">
             </div>
-        </div>
-        <div class="botoes-filtro">
-            <button class="botao-principal" id="aplicar-filtros">Aplicar Filtros</button>
-            <button class="botao-secundario" id="limpar-filtros">Limpar Filtros</button>
-        </div>
-
-        <div class="abas-container">
-            <button class="tab-button active">Abertos</button>
-            <button class="tab-button">Completos</button>
-            <button class="tab-button">Cancelados</button>
+            <div class="filtro-item filtro-periodo">
+                <label for="filtro-data-inicial">Período</label>
+                <div class="input-periodo">
+                    <input type="date" id="filtro-data-inicial" placeholder="Alterado a partir de">
+                    <span>até</span>
+                    <input type="date" id="filtro-data-final">
+                </div>
+            </div>
+            <div class="filtro-item filtro-erro-toggle">
+                <div class="toggle-container">
+                    <span>Filtrar Pedidos com Erro:</span>
+                    <label class="switch">
+                        <input type="checkbox" id="filtro-com-erro">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
         </div>
         
+        <div class="botoes-filtro">
+            <button class="botao-principal" id="aplicar-filtros">Filtrar</button>
+            <button class="botao-secundario" id="limpar-filtros">Limpar</button>
+        </div>
+
+        <div class="abas-tipo-pedido">
+            <a href="#" class="tipo-tab ${!isFullPage ? 'active' : ''}" data-page="pedidos"><span class="status-badge-padrao">Padrão</span></a>
+            <a href="#" class="tipo-tab"><span class="status-badge-flex">FLEX</span></a>
+            <a href="#" class="tipo-tab ${isFullPage ? 'active' : ''}" data-page="pedidos-full-ml"><span class="status-badge-full">FULL</span></a>
+        </div>
+
+        <div class="tabela-acoes">
+            <div class="acoes-esquerda">
+                <button class="botao-principal"><span class="material-icons-outlined">receipt_long</span> Emitir nota</button>
+                <button class="botao-secundario">Preparar etiqueta</button>
+                <button class="botao-secundario">Imprimir Etiquetas</button>
+                <button class="botao-secundario">Gerar Etiqueta Expedy</button>
+                <button class="botao-secundario">Atualizar pedido mercado livre</button>
+            </div>
+            <div class="acoes-direita">
+                <button class="botao-secundario">Mais opções</button>
+            </div>
+        </div>
+
         <div class="tabela-pedidos-container">
+            <div class="pedidos-selecionados">
+                Pedidos selecionados: <span id="count-pedidos-selecionados">0</span>
+            </div>
             <table>
                 <thead>
                     <tr>
                         <th><input type="checkbox" id="select-all-pedidos"></th>
-                        <th>ID Pedido</th>
+                        <th>ID</th>
+                        <th>ID MP</th>
                         <th>Loja</th>
-                        <th>Status MP</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
                         <th>Cliente</th>
-                        <th>Data Venda</th>
-                        <th>Status HUB</th>
-                        <th>Avisos</th>
+                        <th>Data</th>
+                        <th>Status Hub</th>
+                        <th>Avisos / Info</th>
                         <th>Total</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
     `;
 
     if (pedidos.length === 0) {
-        tableHtml += `<tr><td colspan="9" class="no-results">Nenhum pedido encontrado com os filtros aplicados.</td></tr>`;
+        tableHtml += `<tr><td colspan="12" class="no-results">Nenhum pedido encontrado.</td></tr>`;
     } else {
         pedidos.forEach(p => {
             const statusHubClass = `status-hub-${p.statusHub.toLowerCase().replace(/ /g, '-')}`;
+            const tipoBadgeClass = `status-badge-${p.tipo.toLowerCase()}`;
             tableHtml += `
                 <tr>
                     <td><input type="checkbox" class="select-pedido"></td>
-                    <td class="id-link">${p.idMp}</td>
+                    <td class="id-link">${p.id}</td>
+                    <td>${p.idMp}</td>
                     <td>${p.loja}</td>
+                    <td><span class="${tipoBadgeClass}">${p.tipo}</span></td>
                     <td>${p.status}</td>
                     <td>${p.cliente}</td>
                     <td>${p.data}</td>
                     <td><span class="${statusHubClass}">${p.statusHub}</span></td>
-                    <td>${p.avisos}</td>
+                    <td><div class="avisos-icons">${getAvisosIcons(p.avisos)}</div></td>
                     <td>${p.total}</td>
+                    <td>
+                        <button class="botao-tabela-config">
+                            <span class="material-icons-outlined">settings</span>
+                        </button>
+                    </td>
                 </tr>
             `;
         });
@@ -239,20 +317,43 @@ function renderPedidosTable(pedidos) {
     tableHtml += `
                 </tbody>
             </table>
+            <div class="tabela-rodape">
+                <div class="paginacao">
+                    <button class="botao-secundario">&lt;</button>
+                    <button class="botao-secundario active">1</button>
+                    <button class="botao-secundario">2</button>
+                    <button class="botao-secundario">3</button>
+                    <span>...</span>
+                    <button class="botao-secundario">43</button>
+                    <button class="botao-secundario">&gt;</button>
+                </div>
+                <select class="select-pagina">
+                    <option>50 / Página</option>
+                    <option>100 / Página</option>
+                </select>
+            </div>
         </div>
     `;
 
     content.innerHTML = tableHtml;
 }
 
-// 2. Renderiza a Tabela de Integrações
+// 4. Renderiza a Tabela de Pedidos FULL (separada)
+function renderPedidosFullML() {
+     // Apenas pedidos FULL do Mercado Livre
+    const pedidosFull = getPedidos().filter(p => p.tipo === 'FULL' && p.loja.includes('Mercado Livre'));
+    renderPedidosTable(pedidosFull, true);
+}
+
+
+// ... [Restante das funções de renderização (Integracoes, Empresas, Maintenance) permanecem as mesmas] ...
 function renderIntegracoesTable(integracoes) {
     const content = document.getElementById('content');
     
     let successBanner = '';
     if (authorizationSuccessMessage) {
         successBanner = `<div class="success-banner"><span class="material-icons-outlined icon-check">check_circle</span>${authorizationSuccessMessage}</div>`;
-        authorizationSuccessMessage = ''; // Limpa a mensagem após exibir
+        authorizationSuccessMessage = ''; 
     }
 
     let tableHtml = `
@@ -325,11 +426,10 @@ function renderIntegracoesTable(integracoes) {
     `;
 
     content.innerHTML = tableHtml;
-    content.insertAdjacentHTML('beforeend', getModalCadastroHtml()); // Adiciona o modal no final do conteúdo
-    setupCadastroIntegracao(); // Configura a lógica de abertura/fechamento e salvamento
+    content.insertAdjacentHTML('beforeend', getModalCadastroHtml()); 
+    setupCadastroIntegracao(); 
 }
 
-// 3. Renderiza a Tabela de Empresas
 function renderEmpresasTable(empresas) {
     const content = document.getElementById('content');
     
@@ -390,8 +490,6 @@ function renderEmpresasTable(empresas) {
     setupCadastroEmpresa();
 }
 
-
-// 4. Renderiza a página de Manutenção (Outras)
 function renderMaintenancePage(title) {
     const content = document.getElementById('content');
     content.innerHTML = `
@@ -405,10 +503,10 @@ function renderMaintenancePage(title) {
         </div>
     `;
 }
+// ... [Fim das funções de renderização] ...
 
-/* ========================================================= */
-/* MODAL E LÓGICA DE CADASTRO DE INTEGRAÇÃO */
-/* ========================================================= */
+
+// ... [Funções de Modal (getModalCadastroHtml, setupCadastroIntegracao, getModalCadastroEmpresaHtml, setupCadastroEmpresa) permanecem as mesmas] ...
 
 // HTML do Modal de Cadastro de Integração (Escolha do MP)
 function getModalCadastroHtml() {
@@ -484,13 +582,11 @@ function setupCadastroIntegracao() {
     const marketplaces = document.querySelectorAll('.marketplace-card');
     const shopeeForm = document.getElementById('shopee-form');
     const cancelarShopeeBtn = document.getElementById('cancelar-shopee');
-    // Captura o botão dentro do modal.
     let salvarShopeeBtn = document.getElementById('salvar-shopee'); 
 
     if (openModalBtn) {
         openModalBtn.addEventListener('click', () => {
             modal.style.display = 'flex';
-            // Preenche as opções de empresa no select
             const selectEmpresa = document.getElementById('shopee-empresa-vinculo');
             selectEmpresa.innerHTML = '<option value="">Selecione uma Empresa</option>';
             getEmpresas().forEach(empresa => {
@@ -499,7 +595,7 @@ function setupCadastroIntegracao() {
                 option.textContent = empresa.razaoSocial;
                 selectEmpresa.appendChild(option);
             });
-            shopeeForm.style.display = 'none'; // Esconde o form da Shopee ao abrir
+            shopeeForm.style.display = 'none'; 
         });
     }
 
@@ -509,14 +605,12 @@ function setupCadastroIntegracao() {
         });
     }
     
-    // Fecha o modal ao clicar fora dele
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
         }
     });
 
-    // Lógica para mostrar o formulário específico
     marketplaces.forEach(card => {
         card.addEventListener('click', (e) => {
             if (card.classList.contains('coming-soon')) return;
@@ -525,9 +619,7 @@ function setupCadastroIntegracao() {
             if (mp === 'shopee') {
                 shopeeForm.style.display = 'block';
             } else if (mp === 'mercado-livre') {
-                // Simulação de autorização via pop-up
                 alert('Simulando o redirecionamento para o login do Mercado Livre...');
-                // Simula sucesso após 1 segundo
                 setTimeout(() => {
                     addIntegracao('Mercado Livre - Nova Loja', 'Mercado Livre', '1933');
                     modal.style.display = 'none';
@@ -538,40 +630,31 @@ function setupCadastroIntegracao() {
         });
     });
     
-    // Lógica para cancelar o form da Shopee
     if (cancelarShopeeBtn) {
         cancelarShopeeBtn.addEventListener('click', () => {
             shopeeForm.style.display = 'none';
         });
     }
 
-    // =======================================================
-    // LÓGICA DE SALVAMENTO DA SHOPEE
-    // =======================================================
     if (salvarShopeeBtn) {
-        // Remove qualquer listener anterior para evitar duplicidade
         const newSalvarShopeeBtn = salvarShopeeBtn.cloneNode(true);
         salvarShopeeBtn.parentNode.replaceChild(newSalvarShopeeBtn, salvarShopeeBtn);
         salvarShopeeBtn = newSalvarShopeeBtn; 
         
         salvarShopeeBtn.addEventListener('click', () => {
             
-            // 1. Coleta de Dados
             const descricao = document.getElementById('shopee-descricao').value.trim();
             const partnerId = document.getElementById('shopee-partner-id').value.trim();
             const partnerKey = document.getElementById('shopee-partner-key').value.trim(); 
             const empresaId = document.getElementById('shopee-empresa-vinculo').value;
             
-            // 2. Validação
             if (descricao === '' || partnerId === '' || partnerKey === '' || empresaId === '') {
                 alert('Por favor, preencha todos os campos obrigatórios para a integração Shopee.');
                 return;
             }
 
-            // 3. Simula o Salvamento
             addIntegracao(descricao, 'Shopee', empresaId);
             
-            // 4. Feedback e Recarregamento
             document.getElementById('shopee-form').style.display = 'none';
             modal.style.display = 'none';
             authorizationSuccessMessage = `Integração com Shopee ("${descricao}") salva com sucesso. Parceiro ID: ${partnerId}`;
@@ -581,11 +664,7 @@ function setupCadastroIntegracao() {
     }
 }
 
-/* ========================================================= */
-/* MODAL E LÓGICA DE CADASTRO DE EMPRESAS */
-/* ========================================================= */
 
-// HTML do Modal de Cadastro de Empresa (COMPLETO)
 function getModalCadastroEmpresaHtml() {
     return `
         <div id="cadastro-empresa-modal" class="cadastro-modal">
@@ -674,7 +753,6 @@ function getModalCadastroEmpresaHtml() {
     `;
 }
 
-// Lógica de abertura/fechamento e salvamento de empresa
 function setupCadastroEmpresa() {
     const modal = document.getElementById('cadastro-empresa-modal');
     const openModalBtn = document.getElementById('abrir-modal-cadastro-empresa');
@@ -694,7 +772,6 @@ function setupCadastroEmpresa() {
         });
     }
     
-    // Fecha o modal ao clicar fora dele
     window.addEventListener('click', (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
@@ -705,7 +782,6 @@ function setupCadastroEmpresa() {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         
-        // Simulação de coleta de dados de todos os campos
         const razaoSocial = document.getElementById('empresa-razao').value.trim();
         const cnpj = document.getElementById('empresa-cnpj').value.trim();
         const cep = document.getElementById('empresa-cep').value.trim();
@@ -714,23 +790,19 @@ function setupCadastroEmpresa() {
         const certificado = document.getElementById('empresa-certificado').files.length > 0;
         const senhaCertificado = document.getElementById('empresa-senha-certificado').value.trim();
 
-        // Validação básica (CNPJ, Razão Social, Rua e Número, Certificado/Senha)
         if (razaoSocial === '' || cnpj === '' || cep === '' || rua === '' || numero === '' || !certificado || senhaCertificado === '') {
             alert('Por favor, preencha todos os campos obrigatórios (incluindo o upload do Certificado Digital).');
             return;
         }
 
-        // Lógica de Salvamento: Apenas salva o básico (Razão Social e CNPJ) na mock database
         addEmpresa(razaoSocial, cnpj);
         
-        // Feedback e fechamento
         alert(`Empresa "${razaoSocial}" cadastrada com sucesso!`);
         modal.style.display = 'none';
         form.reset();
-        loadPage('empresas'); // Recarrega a página de empresas para mostrar o novo item
+        loadPage('empresas');
     });
 }
-
 
 /* ========================================================= */
 /* LÓGICA DE NAVEGAÇÃO E CARREGAMENTO DE PÁGINA */
@@ -745,7 +817,6 @@ function loadPage(pageName) {
     const targetLink = document.querySelector(`[data-page="${pageName}"]`);
     if (targetLink) {
         targetLink.closest('li').classList.add('active');
-        // Abre o submenu pai, se houver
         const parentMenu = targetLink.closest('.parent-menu');
         if (parentMenu) {
             parentMenu.classList.add('open');
@@ -754,16 +825,16 @@ function loadPage(pageName) {
 
     // Lógica de Carregamento
     if (pageName === 'pedidos') {
-        // Apenas integrações com token OK
         const integracoesAtivas = getIntegracoes().filter(i => i.tokenStatus === 'OK');
         const lojasAtivas = integracoesAtivas.map(i => i.descricao);
-        
-        // Filtra pedidos para mostrar apenas os de lojas ativas
-        const pedidosAtivos = getPedidos().filter(p => lojasAtivas.includes(p.loja));
-        renderPedidosTable(pedidosAtivos);
+        // Filtra pedidos Padrão e FLEX para a tela principal (exclui FULL)
+        const pedidosAtivos = getPedidos().filter(p => lojasAtivas.includes(p.loja) && p.tipo !== 'FULL');
+        renderPedidosTable(pedidosAtivos, false);
+
+    } else if (pageName === 'pedidos-full-ml') {
+        renderPedidosFullML(); // Nova função para pedidos FULL
 
     } else if (pageName === 'integracoes') {
-        // Mostra todas as integrações cadastradas.
         const allIntegrations = getIntegracoes();
         renderIntegracoesTable(allIntegrations); 
 
@@ -773,11 +844,37 @@ function loadPage(pageName) {
 
     } else if (pageName === 'inicio' || pageName === 'produtos' || pageName === 'anuncios' || pageName === 'notas-fiscais' || pageName === 'mensagens' || pageName === 'relatorios' || pageName === 'expedicao' || pageName === 'coleta' || pageName === 'plp' || pageName === 'configuracoes' || pageName === 'operador-logistico' || pageName === 'transportadoras') {
         
-        // Converte para um título amigável (ex: 'notas-fiscais' -> 'Notas Fiscais')
         const title = targetLink ? targetLink.textContent.trim() : pageName.charAt(0).toUpperCase() + pageName.slice(1);
         renderMaintenancePage(title);
         
     }
+    
+    // Configura a navegação interna das abas de tipo de pedido (Padrão, FLEX, FULL)
+    document.querySelectorAll('.abas-tipo-pedido a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetPage = e.currentTarget.getAttribute('data-page');
+            if (targetPage) {
+                // Remove o active de todos e adiciona no clicado
+                document.querySelectorAll('.abas-tipo-pedido a').forEach(a => a.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                
+                // Força o carregamento da página interna sem mudar o menu lateral
+                if (targetPage === 'pedidos') {
+                    const integracoesAtivas = getIntegracoes().filter(i => i.tokenStatus === 'OK');
+                    const lojasAtivas = integracoesAtivas.map(i => i.descricao);
+                    const pedidosAtivos = getPedidos().filter(p => lojasAtivas.includes(p.loja) && p.tipo !== 'FULL');
+                    renderPedidosTable(pedidosAtivos, false);
+                } else if (targetPage === 'pedidos-full-ml') {
+                    renderPedidosFullML();
+                } else {
+                    // Simular carregamento de FLEX ou outras abas
+                    const title = e.currentTarget.textContent.trim();
+                    renderMaintenancePage(`Pedidos - ${title}`);
+                }
+            }
+        });
+    });
 }
 
 // Inicialização do Sistema
@@ -791,9 +888,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (pageName) {
                 e.preventDefault();
-                loadPage(pageName);
+                // Garante que o menu lateral seja atualizado
+                if (pageName === 'pedidos' || pageName === 'pedidos-full-ml') {
+                     // Mantém 'pedidos' ativo na sidebar para ambas sub-páginas
+                    const pedidosLink = document.querySelector('[data-page="pedidos"]');
+                    if(pedidosLink) {
+                        document.querySelectorAll('#menu li').forEach(li => li.classList.remove('active'));
+                        pedidosLink.closest('li').classList.add('active');
+                    }
+                    if(parentMenu) parentMenu.classList.add('open');
+                    
+                    if(pageName === 'pedidos-full-ml') {
+                        renderPedidosFullML();
+                    } else {
+                        loadPage(pageName);
+                    }
+                } else {
+                    loadPage(pageName);
+                }
             } else if (parentMenu) {
-                // Alterna o estado do submenu
                 parentMenu.classList.toggle('open');
             }
         }
