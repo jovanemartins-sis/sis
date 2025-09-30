@@ -17,11 +17,11 @@ let activePedidosData = [];
 // =========================================================
 
 const INITIAL_INTEGRATIONS_MOCK = [
-    // Loja Ativa: Pedidos desta loja serão exibidos
+    // 1. Loja Ativa: Pedidos desta loja serão exibidos
     { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE },
-    // Loja Inativa: Pedidos desta loja NÃO serão exibidos
-    { id: '62306', descricao: 'Mercado Livre - Secundário (ERRO)', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta', creationDate: TODAY_DATE },
-    // Loja Ativa: Pedidos desta loja serão exibidos
+    // 2. Loja Inativa: Pedidos desta loja NÃO serão exibidos (Token ERRO)
+    { id: '62306', descricao: 'Mercado Livre - Secundário', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'ERRO', fluxo: 'Emitir Nota/Etiqueta', creationDate: TODAY_DATE },
+    // 3. Loja Ativa: Pedidos desta loja serão exibidos
     { id: '62307', descricao: 'Mercado Livre - Antiga OK', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta', creationDate: YESTERDAY_DATE }
 ];
 
@@ -48,20 +48,20 @@ function saveIntegracoes(integracoes) {
 
 // O campo 'loja' deve mapear para o campo 'descricao' nas integrações
 const pedidosMock = [
-    // Pedidos de loja ativa (Shopee - Principal)
+    // Pedidos de loja ativa (Shopee - Principal) - **DEVE APARECER**
     { id: '56556090', idMp: '250927JGM6BK0R6', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Viviane de L.A. Rosa', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 35,00' },
     { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' },
 
-    // Pedido de loja ativa antiga (Mercado Livre - Antiga OK)
+    // Pedido de loja ativa antiga (Mercado Livre - Antiga OK) - **DEVE APARECER**
     { id: '40123456', idMp: 'MLB19827364', loja: 'Mercado Livre - Antiga OK', tipo: 'FULL', status: 'delivered', cliente: 'Maria da Silva', data: '01/03/2024', statusHub: 'Completo', avisos: 'Nota emitida', total: 'R$ 150,00' },
     
-    // Pedido de loja com token ERRO (Mercado Livre - Secundário (ERRO)) - **SERÁ EXCLUÍDO**
-    { id: '40123457', idMp: 'MLB19827365', loja: 'Mercado Livre - Secundário (ERRO)', tipo: 'Padrão', status: 'shipped', cliente: 'João Pereira', data: '15/05/2024', statusHub: 'Em separação', avisos: 'Produto esgotado', total: 'R$ 99,90' },
+    // Pedido de loja com token ERRO (Mercado Livre - Secundário) - **NÃO DEVE APARECER**
+    { id: '40123457', idMp: 'MLB19827365', loja: 'Mercado Livre - Secundário', tipo: 'Padrão', status: 'shipped', cliente: 'João Pereira', data: '15/05/2024', statusHub: 'Em separação', avisos: 'Produto esgotado', total: 'R$ 99,90' },
     
-    // Pedido de loja não integrada (SHEIN) - **SERÁ EXCLUÍDO**
+    // Pedido de loja não integrada (SHEIN) - **NÃO DEVE APARECER**
     { id: '56556018', idMp: '250927JGSVEGC', loja: 'SHEIN - Não Integrada', tipo: 'Padrão', status: 'to be collected by SHEIN', cliente: 'Josefa Madalena', data: '26/09/2025', statusHub: 'Expedir', avisos: '', total: 'R$ 22,48' },
     
-    // Outros pedidos ativos
+    // Outros pedidos ativos (Shopee) - **DEVE APARECER**
     { id: '40123458', idMp: 'MLB19827366', loja: 'Shopee - Principal', tipo: 'Padrão', status: 'CANCELLED', cliente: 'Ana Santos', data: '20/08/2024', statusHub: 'Cancelado', avisos: 'Fraude detectada', total: 'R$ 75,00' },
     { id: '40123459', idMp: 'MLB19827367', loja: 'Mercado Livre - Antiga OK', tipo: 'Padrão', status: 'pending', cliente: 'Carlos Alberto', data: '10/09/2025', statusHub: 'Pendente', avisos: 'Aguardando pagamento', total: 'R$ 300,00' }
 ];
@@ -365,269 +365,4 @@ function renderTable(pedidos) {
             <td>${pedido.status}</td>
             <td>${pedido.cliente}</td>
             <td>${pedido.data}</td>
-            <td><span class="status-hub-${pedido.statusHub.toLowerCase().replace(/ /g, '-')}">${pedido.statusHub}</span></td>
-            <td>${pedido.avisos}</td>
-            <td>${pedido.total}</td>
-            <td><button>...</button></td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
-
-function setupCadastroIntegracao() {
-    const btn = document.querySelector('.cadastrar-integracao');
-    const modal = document.getElementById('cadastro-modal');
-    const closeBtn = document.querySelector('#cadastro-modal .close-button');
-
-    if (btn && modal) {
-        btn.addEventListener('click', () => {
-            modal.style.display = 'flex';
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        document.querySelectorAll('.marketplace-card').forEach(card => {
-            if (!card.classList.contains('disabled') && !card.classList.contains('coming-soon')) {
-                card.addEventListener('click', () => {
-                    const name = card.getAttribute('data-marketplace'); 
-                    
-                    if (name === 'Mercado Livre') {
-                        modal.style.display = 'none'; 
-                        // Ação de Redirecionamento CORRETA
-                        window.location.href = OAUTH_URL; 
-                    } else {
-                        modal.style.display = 'none'; 
-                        alert(`Iniciando o fluxo de cadastro para: ${name}`);
-                    }
-                });
-            }
-        });
-    }
-}
-
-function filterPedidos() {
-    // Agora o filtro opera sobre a lista de pedidos ativos (activePedidosData)
-    const lojaFilterValue = document.getElementById('filtro-loja').value.toLowerCase().replace('-principal', '').trim();
-    const statusHubFilterValue = document.getElementById('filtro-status-hub').value.toLowerCase().trim();
-    const idHubFilterValue = document.getElementById('filtro-id-hub').value.trim().toLowerCase();
-    const clienteFilterValue = document.getElementById('filtro-cliente').value.trim().toLowerCase();
-    
-
-    const filteredPedidos = activePedidosData.filter(pedido => {
-        
-        if (lojaFilterValue !== 'todos' && !pedido.loja.toLowerCase().includes(lojaFilterValue)) {
-             return false;
-        }
-        
-        if (statusHubFilterValue !== 'todos' && pedido.statusHub.toLowerCase() !== statusHubFilterValue) {
-            return false;
-        }
-
-        if (idHubFilterValue && pedido.id.toLowerCase().includes(idHubFilterValue) === false) {
-            return false;
-        }
-
-        if (clienteFilterValue && pedido.cliente.toLowerCase().includes(clienteFilterValue) === false) {
-            return false;
-        }
-
-        return true;
-    });
-
-    renderTable(filteredPedidos);
-}
-
-function setupFilterButtons() {
-    const limparFiltroBtn = document.getElementById('limpar-filtro');
-    const aplicarFiltroBtn = document.getElementById('aplicar-filtro');
-
-    if (limparFiltroBtn) {
-        limparFiltroBtn.addEventListener('click', () => {
-            const formElements = document.querySelectorAll('.filtros-container select, .filtros-container input');
-            formElements.forEach(element => {
-                if (element.type === 'checkbox') {
-                    element.checked = false;
-                } else if (element.tagName === 'SELECT') { 
-                    element.value = 'todos'; 
-                } else { 
-                    element.value = ''; 
-                }
-            });
-            // Ao limpar, renderiza a lista inicial de pedidos ativos (activePedidosData)
-            renderTable(activePedidosData); 
-        });
-    }
-
-    if (aplicarFiltroBtn) {
-        aplicarFiltroBtn.addEventListener('click', () => {
-            filterPedidos(); 
-        });
-    }
-}
-
-function loadPage(pageName) {
-    const contentArea = document.getElementById('content');
-    let pageHtml = pageContent[pageName];
-
-    // LÓGICA DE EXIBIÇÃO DA MENSAGEM DE SUCESSO
-    if (pageName === 'integracoes' && authorizationSuccessMessage) {
-        const successHtml = `
-            <div class="success-banner">
-                <span class="icon-check">✓</span> ${authorizationSuccessMessage}
-            </div>
-        `;
-        pageHtml = successHtml + pageHtml;
-        authorizationSuccessMessage = null; 
-    }
-
-    contentArea.innerHTML = pageHtml;
-    
-    // RENDERIZAÇÃO DA TABELA DE DADOS
-    if (pageName === 'pedidos') {
-        const pedidosParaExibir = getPedidosFromActiveIntegrations();
-        renderTable(pedidosParaExibir); 
-        setupFilterButtons();
-    } else if (pageName === 'integracoes') {
-        const allIntegrations = getIntegracoes();
-        
-        // Aplica o filtro de ML, OK e HOJE para a tabela de integrações
-        const filteredIntegrations = allIntegrations.filter(i => 
-            i.marketplace === 'Mercado Livre' &&
-            i.tokenStatus === 'OK' &&
-            i.creationDate === TODAY_DATE
-        );
-        
-        renderIntegracoesTable(filteredIntegrations); 
-        setupCadastroIntegracao();
-    }
-    setupSidebarMenu();
-}
-
-function setupSidebarMenu() {
-    // Adiciona o comportamento de clique para o menu pai (Parent Menu)
-    document.querySelectorAll('.parent-menu > a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            // Verifica se o submenu já está aberto no mesmo parent
-            const parentLi = link.closest('.parent-menu');
-            const wasOpen = parentLi.classList.contains('open');
-            
-            // Fecha todos os outros submenus
-            document.querySelectorAll('.parent-menu').forEach(p => p.classList.remove('open'));
-            
-            // Abre o submenu clicado (se não estava aberto)
-            if (!wasOpen) {
-                parentLi.classList.add('open');
-            }
-            
-            // Permite a navegação para a página de dados-page
-            const pageName = link.getAttribute('data-page');
-            
-            // Se o link for um item raiz com submenu, não navega imediatamente
-            if (!pageContent[pageName] || !link.closest('.submenu')) {
-                e.preventDefault();
-            }
-        });
-    });
-
-    // Adiciona o comportamento de clique para todos os links do menu lateral
-    document.querySelectorAll('#sidebar a[data-page]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const pageName = link.getAttribute('data-page');
-
-            document.querySelectorAll('#sidebar li').forEach(li => {
-                li.classList.remove('active');
-            });
-
-            link.closest('li').classList.add('active');
-
-            // Garante que o menu pai esteja aberto ao selecionar um subitem
-            const parentMenu = link.closest('.parent-menu');
-            if (parentMenu) {
-                parentMenu.classList.add('open');
-            }
-
-            loadPage(pageName);
-        });
-    });
-}
-
-
-// =========================================================
-// FUNÇÃO DE INICIALIZAÇÃO (DOMContentLoaded)
-// =========================================================
-document.addEventListener('DOMContentLoaded', () => {
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    let pageToLoad = 'pedidos'; 
-
-    // 1. LÓGICA CRÍTICA: Verifica se o Mercado Livre nos enviou o 'code'
-    if (urlParams.has('code')) {
-        // --- ADICIONA A NOVA INTEGRAÇÃO NO LOCALSTORAGE ---
-        let integracoesAtuais = getIntegracoes();
-        
-        // Simula que a integração foi realizada, adicionando uma nova loja ATIVA
-        integracoesAtuais.push({
-            id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
-            descricao: 'Mercado Livre - Nova Loja de Hoje', 
-            marketplace: 'Mercado Livre',
-            idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
-            tokenStatus: 'OK', 
-            fluxo: 'Emitir Nota/Etiqueta',
-            creationDate: TODAY_DATE
-        });
-
-        // Adiciona um pedido mock para a loja recém-criada para fins de teste
-        pedidosMock.push({
-            id: (Math.floor(Math.random() * 90000) + 57000000).toString(),
-            idMp: 'NEWLY-' + (Math.floor(Math.random() * 900000) + 100000),
-            loja: 'Mercado Livre - Nova Loja de Hoje', 
-            tipo: 'Padrão', 
-            status: 'NEW', 
-            cliente: 'Cliente Novo da Integração', 
-            data: TODAY_DATE.split('-').reverse().join('/'), 
-            statusHub: 'Expedir', 
-            avisos: 'Novo da integração', 
-            total: 'R$ 88,88' 
-        });
-
-
-        // Salva a nova lista no localStorage
-        saveIntegracoes(integracoesAtuais);
-        // -----------------------------------------------------------
-
-        authorizationSuccessMessage = `Integração com Mercado Livre concluída! A nova loja foi salva e agora é exibida na tabela.`;
-        
-        pageToLoad = 'integracoes'; 
-
-        // Limpa o URL no navegador para remover o parâmetro 'code'
-        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.replaceState({path: newUrl}, '', newUrl);
-
-    } else if (urlParams.has('error')) {
-        authorizationSuccessMessage = "Erro na integração com o Mercado Livre. Por favor, tente novamente.";
-        pageToLoad = 'integracoes';
-    }
-
-
-    // 2. Carrega a página inicial ou a página de integrações
-    loadPage(pageToLoad);
-    
-    // 3. Define a classe 'active' no menu lateral
-    const activeLink = document.querySelector(`[data-page="${pageToLoad}"]`);
-    if (activeLink) {
-        activeLink.closest('li').classList.add('active');
-        const parentMenu = activeLink.closest('.parent-menu');
-        if (parentMenu) {
-            parentMenu.classList.add('open');
-        }
-    }
-});
+            <td><span class
