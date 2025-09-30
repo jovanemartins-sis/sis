@@ -220,6 +220,7 @@ const pedidosMock = [
     { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' }
 ];
 
+// Mock inicial de integrações
 const integracoesMock = [
     { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
     { id: '62306', descricao: 'Mercado Livre - Principal', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
@@ -232,6 +233,7 @@ const integracoesMock = [
 // =========================================================
 
 function renderTable(pedidos) {
+    // ... (Mantido o código da função renderTable) ...
     const tableBody = document.getElementById('pedidos-table-body');
     if (!tableBody) {
         return;
@@ -289,6 +291,7 @@ function renderIntegracoesTable(integracoes) {
 }
 
 function setupCadastroIntegracao() {
+    // ... (Mantido o código da função setupCadastroIntegracao, incluindo o redirecionamento do ML) ...
     const btn = document.querySelector('.cadastrar-integracao');
     const modal = document.getElementById('cadastro-modal');
     const closeBtn = document.querySelector('#cadastro-modal .close-button');
@@ -337,6 +340,7 @@ function setupCadastroIntegracao() {
 
 
 function filterPedidos() {
+    // ... (Mantido o código da função filterPedidos) ...
     const lojaFilterValue = document.getElementById('filtro-loja').value.toLowerCase().replace('-principal', '').trim();
     const statusHubFilterValue = document.getElementById('filtro-status-hub').value.toLowerCase().trim();
     const idHubFilterValue = document.getElementById('filtro-id-hub').value.trim().toLowerCase();
@@ -368,6 +372,7 @@ function filterPedidos() {
 }
 
 function setupFilterButtons() {
+    // ... (Mantido o código da função setupFilterButtons) ...
     const limparFiltroBtn = document.getElementById('limpar-filtro');
     const aplicarFiltroBtn = document.getElementById('aplicar-filtro');
 
@@ -418,6 +423,7 @@ function loadPage(pageName) {
         renderTable(pedidosMock);
         setupFilterButtons();
     } else if (pageName === 'integracoes') {
+        // Renderiza a tabela COM o novo item (se houver)
         renderIntegracoesTable(integracoesMock); 
         setupCadastroIntegracao();
     }
@@ -425,6 +431,7 @@ function loadPage(pageName) {
 }
 
 function setupSidebarMenu() {
+    // ... (Mantido o código da função setupSidebarMenu) ...
     // Lógica para o menu de sub-pedidos
     const parentMenu = document.querySelector('.parent-menu');
     if (parentMenu) {
@@ -465,6 +472,7 @@ function setupSidebarMenu() {
 
 // =========================================================
 // FUNÇÃO DE INICIALIZAÇÃO (DOMContentLoaded)
+// LÓGICA CRÍTICA DE DETECÇÃO DO CÓDIGO E ADIÇÃO À TABELA
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -475,8 +483,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (urlParams.has('code')) {
         const authorizationCode = urlParams.get('code');
         
+        // --- NOVIDADE: Adiciona a nova integração SIMULADA à lista ---
+        // Checa se já existe para evitar duplicatas em um refresh
+        const isAlreadyAdded = integracoesMock.some(i => i.descricao === 'Nova Loja ML - Simulação');
+        
+        if (!isAlreadyAdded) {
+            integracoesMock.push({
+                id: (Math.floor(Math.random() * 90000) + 10000).toString(), // ID aleatório
+                descricao: 'Nova Loja ML - Simulação',
+                marketplace: 'Mercado Livre',
+                idEmpresa: '1933',
+                tokenStatus: 'OK',
+                fluxo: 'Emitir Nota/Etiqueta'
+            });
+        }
+        // -----------------------------------------------------------
+
         // Define a mensagem de sucesso para ser exibida após o carregamento da página
-        authorizationSuccessMessage = `Integração com Mercado Livre salva com sucesso no sistema! (Código recebido: ${authorizationCode.substring(0, 15)}...)`;
+        authorizationSuccessMessage = `Integração com Mercado Livre salva com sucesso no sistema! A nova loja foi adicionada à tabela.`;
         
         pageToLoad = 'integracoes'; // Volta para a página de integrações
 
