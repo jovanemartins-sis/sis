@@ -437,16 +437,32 @@ function loadPage(pageName) {
 }
 
 function setupSidebarMenu() {
-    const parentMenu = document.querySelector('.parent-menu');
-    if (parentMenu) {
-        parentMenu.addEventListener('click', (e) => {
-            if (e.target.tagName === 'A' && !e.target.closest('.submenu')) {
+    // Adiciona o comportamento de clique para o menu pai (Parent Menu)
+    document.querySelectorAll('.parent-menu > a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            // Verifica se o submenu já está aberto no mesmo parent
+            const parentLi = link.closest('.parent-menu');
+            const wasOpen = parentLi.classList.contains('open');
+            
+            // Fecha todos os outros submenus
+            document.querySelectorAll('.parent-menu').forEach(p => p.classList.remove('open'));
+            
+            // Abre o submenu clicado (se não estava aberto)
+            if (!wasOpen) {
+                parentLi.classList.add('open');
+            }
+            
+            // Permite a navegação para a página de dados-page
+            const pageName = link.getAttribute('data-page');
+            
+            // Se o link for um item raiz com submenu, não navega imediatamente
+            if (!pageContent[pageName] || !link.closest('.submenu')) {
                 e.preventDefault();
-                parentMenu.classList.toggle('open');
             }
         });
-    }
+    });
 
+    // Adiciona o comportamento de clique para todos os links do menu lateral
     document.querySelectorAll('#sidebar a[data-page]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -458,8 +474,10 @@ function setupSidebarMenu() {
 
             link.closest('li').classList.add('active');
 
-            if (link.closest('.parent-menu')) {
-                link.closest('.parent-menu').classList.add('open');
+            // Garante que o menu pai esteja aberto ao selecionar um subitem
+            const parentMenu = link.closest('.parent-menu');
+            if (parentMenu) {
+                parentMenu.classList.add('open');
             }
 
             loadPage(pageName);
@@ -481,20 +499,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- ADICIONA A NOVA INTEGRAÇÃO NO LOCALSTORAGE ---
         let integracoesAtuais = getIntegracoes();
         
-        // Simula que a integração foi realizada, apenas se a URL não tiver sido limpa ainda
-        if (window.history.length > 1) { // Verifica se houve navegação (simplificação)
-            integracoesAtuais.push({
-                id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
-                descricao: 'Mercado Livre - Nova Loja', // Descrição diferente para teste
-                marketplace: 'Mercado Livre',
-                idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
-                tokenStatus: 'OK',
-                fluxo: 'Emitir Nota/Etiqueta'
-            });
+        // Simula que a integração foi realizada, adicionando uma nova loja
+        integracoesAtuais.push({
+            id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
+            descricao: 'Mercado Livre - Nova Loja', 
+            marketplace: 'Mercado Livre',
+            idEmpresa: (Math.floor(Math.random() * 9000) + 1000).toString(),
+            tokenStatus: 'OK',
+            fluxo: 'Emitir Nota/Etiqueta'
+        });
 
-            // Salva a nova lista no localStorage
-            saveIntegracoes(integracoesAtuais);
-        }
+        // Salva a nova lista no localStorage
+        saveIntegracoes(integracoesAtuais);
         // -----------------------------------------------------------
 
         authorizationSuccessMessage = `Integração com Mercado Livre concluída! A nova loja foi salva e agora é exibida na tabela.`;
