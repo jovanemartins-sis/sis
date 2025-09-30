@@ -8,8 +8,35 @@ let authorizationSuccessMessage = null;
 
 
 // =========================================================
-// Conteúdo das Páginas (Mockup)
+// GESTÃO DE DADOS PERSISTENTES (LOCAL STORAGE)
 // =========================================================
+
+// Função para obter a lista de integrações salvas no navegador
+function getIntegracoes() {
+    const saved = localStorage.getItem('sis_integracoes');
+    if (saved) {
+        return JSON.parse(saved);
+    }
+    // Retorna a lista inicial se nada estiver salvo (mock inicial)
+    return [
+        { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
+        { id: '62306', descricao: 'Mercado Livre - Principal', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
+        { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
+    ];
+}
+
+// Função para salvar a lista atual de integrações no navegador
+function saveIntegracoes(integracoes) {
+    localStorage.setItem('sis_integracoes', JSON.stringify(integracoes));
+}
+
+
+// =========================================================
+// Conteúdo das Páginas (Mockup)
+// ... (Todo o restante do pageContent, pedidosMock, etc. é mantido)
+// ...
+// =========================================================
+
 const pageContent = {
     'inicio': `<div class="header"><h2>Início</h2></div><div class="maintenance-message">Página em Manutenção</div>`,
     'integracoes': `
@@ -220,44 +247,11 @@ const pedidosMock = [
     { id: '56556100', idMp: '250927JGSVEGD', loja: 'Shopee', tipo: 'Padrão', status: 'PROCESSED', cliente: 'Pedro Santos', data: '26/09/2025', statusHub: 'Pendente', avisos: 'Caractere especial', total: 'R$ 55,00' }
 ];
 
-// Mock inicial de integrações
-const integracoesMock = [
-    { id: '62305', descricao: 'Shopee - Principal', marketplace: 'Shopee', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
-    { id: '62306', descricao: 'Mercado Livre - Principal', marketplace: 'Mercado Livre', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' },
-    { id: '62307', descricao: 'Shein - Principal', marketplace: 'SHEIN', idEmpresa: '1933', tokenStatus: 'OK', fluxo: 'Emitir Nota/Etiqueta' }
-];
-
+// O array integracoesMock agora será inicializado pela função getIntegracoes()
 
 // =========================================================
 // Funções de Renderização e Lógica
 // =========================================================
-
-function renderTable(pedidos) {
-    // ... (Mantido o código da função renderTable) ...
-    const tableBody = document.getElementById('pedidos-table-body');
-    if (!tableBody) {
-        return;
-    }
-    tableBody.innerHTML = '';
-    pedidos.forEach(pedido => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><input type="checkbox"></td>
-            <td>${pedido.id}</td>
-            <td>${pedido.idMp}</td>
-            <td>${pedido.loja}</td>
-            <td>${pedido.tipo}</td>
-            <td>${pedido.status}</td>
-            <td>${pedido.cliente}</td>
-            <td>${pedido.data}</td>
-            <td><span class="status-hub-${pedido.statusHub.toLowerCase().replace(/ /g, '-')}">${pedido.statusHub}</span></td>
-            <td>${pedido.avisos}</td>
-            <td>${pedido.total}</td>
-            <td><button>...</button></td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
 
 function renderIntegracoesTable(integracoes) {
     const tableBody = document.getElementById('integracoes-table-body');
@@ -290,45 +284,63 @@ function renderIntegracoesTable(integracoes) {
     });
 }
 
+// ... (Outras funções como renderTable, setupCadastroIntegracao, loadPage, etc.)
+
+function renderTable(pedidos) {
+    const tableBody = document.getElementById('pedidos-table-body');
+    if (!tableBody) {
+        return;
+    }
+    tableBody.innerHTML = '';
+    pedidos.forEach(pedido => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="checkbox"></td>
+            <td>${pedido.id}</td>
+            <td>${pedido.idMp}</td>
+            <td>${pedido.loja}</td>
+            <td>${pedido.tipo}</td>
+            <td>${pedido.status}</td>
+            <td>${pedido.cliente}</td>
+            <td>${pedido.data}</td>
+            <td><span class="status-hub-${pedido.statusHub.toLowerCase().replace(/ /g, '-')}">${pedido.statusHub}</span></td>
+            <td>${pedido.avisos}</td>
+            <td>${pedido.total}</td>
+            <td><button>...</button></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
 function setupCadastroIntegracao() {
-    // ... (Mantido o código da função setupCadastroIntegracao, incluindo o redirecionamento do ML) ...
     const btn = document.querySelector('.cadastrar-integracao');
     const modal = document.getElementById('cadastro-modal');
     const closeBtn = document.querySelector('#cadastro-modal .close-button');
 
     if (btn && modal) {
-        // Abrir Modal
         btn.addEventListener('click', () => {
             modal.style.display = 'flex';
         });
 
-        // Fechar Modal pelo X
         closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
         });
 
-        // Fechar Modal clicando fora
         window.addEventListener('click', (event) => {
             if (event.target === modal) {
                 modal.style.display = 'none';
             }
         });
 
-        // Adiciona evento de clique aos cards de Marketplace
         document.querySelectorAll('.marketplace-card').forEach(card => {
             if (!card.classList.contains('disabled') && !card.classList.contains('coming-soon')) {
                 card.addEventListener('click', () => {
                     const name = card.getAttribute('data-marketplace'); 
                     
                     if (name === 'Mercado Livre') {
-                        // 1. Fecha o modal antes de redirecionar
                         modal.style.display = 'none'; 
-
-                        // 2. Ação de Redirecionamento CORRETA
                         window.location.href = OAUTH_URL; 
-
                     } else {
-                        // Ação genérica para outros marketplaces
                         modal.style.display = 'none'; 
                         alert(`Iniciando o fluxo de cadastro para: ${name}`);
                     }
@@ -338,9 +350,7 @@ function setupCadastroIntegracao() {
     }
 }
 
-
 function filterPedidos() {
-    // ... (Mantido o código da função filterPedidos) ...
     const lojaFilterValue = document.getElementById('filtro-loja').value.toLowerCase().replace('-principal', '').trim();
     const statusHubFilterValue = document.getElementById('filtro-status-hub').value.toLowerCase().trim();
     const idHubFilterValue = document.getElementById('filtro-id-hub').value.trim().toLowerCase();
@@ -372,7 +382,6 @@ function filterPedidos() {
 }
 
 function setupFilterButtons() {
-    // ... (Mantido o código da função setupFilterButtons) ...
     const limparFiltroBtn = document.getElementById('limpar-filtro');
     const aplicarFiltroBtn = document.getElementById('aplicar-filtro');
 
@@ -410,33 +419,27 @@ function loadPage(pageName) {
                 <span class="icon-check">✓</span> ${authorizationSuccessMessage}
             </div>
         `;
-        // Adiciona a mensagem de sucesso no topo do conteúdo da página
         pageHtml = successHtml + pageHtml;
-        
-        // Limpa a mensagem após exibir, para que ela não reapareça em recarregamentos
         authorizationSuccessMessage = null; 
     }
-    // FIM DA LÓGICA DE EXIBIÇÃO
 
     contentArea.innerHTML = pageHtml;
+    
+    // RENDERIZAÇÃO DA TABELA DE INTEGRAÇÕES AGORA CHAMA O getIntegracoes()
     if (pageName === 'pedidos') {
         renderTable(pedidosMock);
         setupFilterButtons();
     } else if (pageName === 'integracoes') {
-        // Renderiza a tabela COM o novo item (se houver)
-        renderIntegracoesTable(integracoesMock); 
+        renderIntegracoesTable(getIntegracoes()); 
         setupCadastroIntegracao();
     }
     setupSidebarMenu();
 }
 
 function setupSidebarMenu() {
-    // ... (Mantido o código da função setupSidebarMenu) ...
-    // Lógica para o menu de sub-pedidos
     const parentMenu = document.querySelector('.parent-menu');
     if (parentMenu) {
         parentMenu.addEventListener('click', (e) => {
-            // Verifica se o clique foi diretamente no link principal para não fechar ao clicar em subitens
             if (e.target.tagName === 'A' && !e.target.closest('.submenu')) {
                 e.preventDefault();
                 parentMenu.classList.toggle('open');
@@ -444,26 +447,21 @@ function setupSidebarMenu() {
         });
     }
 
-    // Lógica para navegação entre as páginas e ativação do menu
     document.querySelectorAll('#sidebar a[data-page]').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const pageName = link.getAttribute('data-page');
 
-            // Limpa a classe 'active' de todos os itens do menu
             document.querySelectorAll('#sidebar li').forEach(li => {
                 li.classList.remove('active');
             });
 
-            // Adiciona a classe 'active' apenas para o item clicado
             link.closest('li').classList.add('active');
 
-            // Mantém o submenu aberto, se for o caso
             if (link.closest('.parent-menu')) {
                 link.closest('.parent-menu').classList.add('open');
             }
 
-            // Carrega a página
             loadPage(pageName);
         });
     });
@@ -472,50 +470,45 @@ function setupSidebarMenu() {
 
 // =========================================================
 // FUNÇÃO DE INICIALIZAÇÃO (DOMContentLoaded)
-// LÓGICA CRÍTICA DE DETECÇÃO DO CÓDIGO E ADIÇÃO À TABELA
 // =========================================================
 document.addEventListener('DOMContentLoaded', () => {
     
     const urlParams = new URLSearchParams(window.location.search);
-    let pageToLoad = 'pedidos'; // Página padrão
+    let pageToLoad = 'pedidos'; 
 
     // 1. LÓGICA CRÍTICA: Verifica se o Mercado Livre nos enviou o 'code'
     if (urlParams.has('code')) {
-        const authorizationCode = urlParams.get('code');
+        // --- NOVIDADE: Adiciona a nova integração no localStorage ---
+        let integracoesAtuais = getIntegracoes();
         
-        // --- NOVIDADE: Adiciona a nova integração SIMULADA à lista ---
-        // Checa se já existe para evitar duplicatas em um refresh
-        const isAlreadyAdded = integracoesMock.some(i => i.descricao === 'Nova Loja ML - Simulação');
-        
-        if (!isAlreadyAdded) {
-            integracoesMock.push({
-                id: (Math.floor(Math.random() * 90000) + 10000).toString(), // ID aleatório
-                descricao: 'Nova Loja ML - Simulação',
-                marketplace: 'Mercado Livre',
-                idEmpresa: '1933',
-                tokenStatus: 'OK',
-                fluxo: 'Emitir Nota/Etiqueta'
-            });
-        }
+        // Simula que a integração foi realizada
+        integracoesAtuais.push({
+            id: (Math.floor(Math.random() * 90000) + 10000).toString(), 
+            descricao: 'Mercado Livre - Nova Loja', // Descrição diferente para teste
+            marketplace: 'Mercado Livre',
+            idEmpresa: '1933',
+            tokenStatus: 'OK',
+            fluxo: 'Emitir Nota/Etiqueta'
+        });
+
+        // Salva a nova lista no localStorage
+        saveIntegracoes(integracoesAtuais);
         // -----------------------------------------------------------
 
-        // Define a mensagem de sucesso para ser exibida após o carregamento da página
-        authorizationSuccessMessage = `Integração com Mercado Livre salva com sucesso no sistema! A nova loja foi adicionada à tabela.`;
+        authorizationSuccessMessage = `Integração com Mercado Livre concluída! A nova loja foi salva e agora é exibida na tabela.`;
         
-        pageToLoad = 'integracoes'; // Volta para a página de integrações
+        pageToLoad = 'integracoes'; 
 
-        // Limpa o URL no navegador para remover o parâmetro 'code'
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({path: newUrl}, '', newUrl);
 
     } else if (urlParams.has('error')) {
-        // Se houver algum erro de autorização do Mercado Livre
         authorizationSuccessMessage = "Erro na integração com o Mercado Livre. Por favor, tente novamente.";
         pageToLoad = 'integracoes';
     }
 
 
-    // 2. Carrega a página inicial ou a página de integrações após o retorno do ML
+    // 2. Carrega a página inicial ou a página de integrações
     loadPage(pageToLoad);
     
     // 3. Define a classe 'active' no menu lateral
