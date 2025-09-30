@@ -73,8 +73,8 @@ nav a:hover {
 .icon-chart::before { content: '📊'; margin-right: 10px; }
 .icon-message::before { content: '💬'; margin-right: 10px; }
 .icon-wrench::before { content: '🔧'; margin-right: 10px; }
-.icon-asterisk::before { content: '* '; margin-right: 5px; color: #f39c12; }
-.icon-check::before { content: '✔'; margin-right: 8px; }
+.icon-asterisk::before { content: '✶'; margin-right: 5px; color: #f39c12; font-size: 0.8em; }
+
 
 /* Submenu */
 .submenu {
@@ -197,6 +197,96 @@ nav a:hover {
     cursor: pointer;
 }
 
+/* Banner de sucesso após OAuth */
+.success-banner {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+    font-weight: 500;
+}
+
+/* =========================================================
+   FILTROS DE PEDIDOS
+   ========================================================= */
+.filtros-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+}
+.filtro-item label {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 5px;
+}
+.filtro-item select,
+.filtro-item input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+/* Ajuste específico para o filtro de Pedidos com Erro (Toggle) */
+.filtro-erro {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.filtro-erro label:first-child {
+    flex-grow: 1;
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+.abas-container {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+.tab-button {
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #777;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+.tab-button.active {
+    color: #e67e22;
+    border-bottom: 3px solid #e67e22;
+}
+
+.botoes-filtro {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.botoes-acao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f7f7f7;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
 /* =========================================================
    ESTILOS DE TABELAS (Pedidos, Integrações, Empresas)
    ========================================================= */
@@ -290,10 +380,38 @@ nav a:hover {
     color: #7f8c8d;
     display: block; 
 }
+.no-results {
+    text-align: center;
+    font-style: italic;
+    color: #7f8c8d;
+}
+
+/* Paginação */
+.pagination-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+}
+.pagination-nav button {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 0 2px;
+    border-radius: 4px;
+}
+.pagination-nav button.active {
+    background-color: #e67e22;
+    color: white;
+    border-color: #e67e22;
+}
 
 
 /* =========================================================
-   ESTILOS DE FORMS E CONFIGURAÇÃO
+   ESTILOS DE FORMS E CONFIGURAÇÃO (Configurações Gerais e Integração)
    ========================================================= */
 
 .config-header {
@@ -345,6 +463,20 @@ nav a:hover {
     color: #777;
     margin-bottom: 5px;
 }
+.info-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #3498db;
+    color: white;
+    font-size: 0.8em;
+    text-align: center;
+    line-height: 16px;
+    margin-left: 5px;
+    cursor: help;
+}
+
 
 .input-item input[type="text"],
 .input-item input[type="email"],
@@ -445,7 +577,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 
 /* =========================================================
-   MODAL DE CADASTRO
+   MODAL DE CADASTRO (Integrações)
    ========================================================= */
 
 .cadastro-modal {
