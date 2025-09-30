@@ -1,10 +1,8 @@
 // =========================================================
 // CONFIGURAÇÕES DA INTEGRAÇÃO MERCADO LIVRE (OAuth 2.0)
 // =========================================================
-const MERCADO_LIVRE_CLIENT_ID = '2535848994116239'; // SEU Client ID
-const REDIRECT_URI = 'https://jovanemartins-sis.github.io/sis/';
-// ESTA É A URL DE AUTORIZAÇÃO CORRETA:
-const OAUTH_URL = `https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${MERCADO_LIVRE_CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
+// A URL solicitada foi definida AQUI, de forma fixa, para garantir que não haja erro:
+const OAUTH_URL = 'https://auth.mercadolivre.com.br/authorization?response_type=code&client_id=2535848994116239&redirect_uri=https://jovanemartins-sis.github.io/sis/';
 
 
 // =========================================================
@@ -321,7 +319,7 @@ function setupCadastroIntegracao() {
                         // 1. Fecha o modal antes de redirecionar
                         modal.style.display = 'none'; 
 
-                        // 2. Inicia o fluxo de Autorização (OAuth/Login) com a URL CORRETA
+                        // 2. Inicia o fluxo de Autorização (OAuth/Login) com a URL CORRETA e FIXA
                         window.location.href = OAUTH_URL; 
 
                     } else {
